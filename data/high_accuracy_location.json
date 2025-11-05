@@ -1,0 +1,16 @@
+{
+  "last_location": {
+    "latitude": 12.9753,
+    "longitude": 77.591,
+    "accuracy": 5000,
+    "address": "Bengaluru, Karnataka, India",
+    "city": "Bengaluru",
+    "region": "Karnataka",
+    "country": "India",
+    "isp": "ACT Fibernet",
+    "timestamp": 1762329264.5192282,
+    "method": "enhanced_ip_ipapi"
+  },
+  "cache": {},
+  "last_updated": 1762329264.8306062
+}

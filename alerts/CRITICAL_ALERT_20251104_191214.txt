@@ -1,0 +1,18 @@
+🚨 CRITICAL EMERGENCY ALERT 🚨
+
+User: mary
+Phone: +918848848484
+Time: 2025-11-04 19:12:14
+Keywords: help
+Text: "help help help help help help help help help help help help help help"
+Location: Bengaluru (12.9753, 77.5910)
+Map: https://maps.google.com/?q=12.9753,77.591
+
+Emergency Contacts:
+- 1
+- 2
+- 3
+- 3
+- 4
+
+⚠️ NETWORK FAILED - MANUAL ACTION REQUIRED ⚠️

@@ -1,0 +1,110 @@
+{
+  "user_info": {
+    "name": "mary",
+    "email": "mary@hotmail.com",
+    "phone": "9000000000",
+    "emergency_contacts": [
+      "Rohit: +919072909106 (Airtel)"
+    ],
+    "medical_info": {
+      "blood_type": "",
+      "allergies": [],
+      "medications": [],
+      "conditions": []
+    }
+  },
+  "alert_settings": {
+    "messaging_service": "sms",
+    "twilio_config": {
+      "sid": "",
+      "auth_token": "",
+      "phone_number": "",
+      "messaging_service_sid": ""
+    },
+    "email_config": {
+      "smtp_server": "npcp mbhr vtcx jdrc",
+      "smtp_port": 587,
+      "username": "mary",
+      "password": "98978787l;;lki88",
+      "use_tls": true
+    },
+    "telegram_config": {
+      "bot_token": "",
+      "chat_ids": []
+    },
+    "discord_config": {
+      "webhook_url": "",
+      "bot_token": "",
+      "channel_id": ""
+    },
+    "sms_config": {
+      "smtp_server": "smtp.gmail.com",
+      "smtp_port": 587,
+      "username": "mary@hotmail.com",
+      "password": "98978787l;;lki88",
+      "use_tls": true
+    }
+  },
+  "location_settings": {
+    "enable_gps": true,
+    "location_accuracy": "high",
+    "share_location": true
+  },
+  "voice_settings": {
+    "keywords": [
+      "help",
+      "save me",
+      "emergency",
+      "police",
+      "fire",
+      "ambulance",
+      "danger",
+      "attack",
+      "hurt",
+      "scared",
+      "trapped",
+      "stop it",
+      "get away",
+      "leave me alone",
+      "don't touch me",
+      "no means no",
+      "get off me",
+      "somebody help",
+      "call police",
+      "he's hurting me",
+      "she's hurting me",
+      "domestic violence",
+      "abuse",
+      "stalker",
+      "following me",
+      "threatening me",
+      "kidnap",
+      "rape",
+      "assault",
+      "harassment",
+      "violence",
+      "beating me",
+      "choking me",
+      "hitting me",
+      "forcing me",
+      "won't let me go",
+      "locked in",
+      "can't escape",
+      "being held",
+      "against my will",
+      "unsafe",
+      "in danger",
+      "need help now",
+      "call 911",
+      "call emergency",
+      "mayday",
+      "sos"
+    ],
+    "sensitivity": "high",
+    "wake_word": "hey shield",
+    "escalation_enabled": true,
+    "escalation_delay_seconds": 15,
+    "auto_call_enabled": true,
+    "auto_call_delay_seconds": 30
+  }
+}

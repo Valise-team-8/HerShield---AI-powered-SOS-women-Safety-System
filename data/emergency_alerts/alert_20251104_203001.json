@@ -1,0 +1,30 @@
+{
+  "timestamp": "2025-11-04T20:30:01.549359",
+  "alert_type": "emergency_alert",
+  "message": "\n\ud83d\udea8 EMERGENCY ALERT \ud83d\udea8\nUser: mary\nEmail: mary@hotmail.com\nPhone: 9000000000\nReason: System test alert - please ignore\nTime: 2025-11-04 20:30:01\n\nLocation Information:\nCoordinates: 12.975300, 77.591000\nLocation: Bengaluru, KA, India\nMethod: ip_geolocation (city_level)\nUpdated: just now\n\nEmergency Contacts:\n\u2022 john\n\u2022 john\n\u2022 905678990\n\nMedical Information:\n\u2022 Blood Type: \n\u2022 Allergies: None\n\u2022 Medications: None\n\u2022 Conditions: None\n\nThis alert was generated automatically by HerShield Safety System.\n",
+  "location_data": {
+    "latitude": 12.9753,
+    "longitude": 77.591
+  },
+  "user_info": {
+    "name": "mary",
+    "email": "mary@hotmail.com",
+    "phone": "9000000000",
+    "emergency_contacts": [
+      "john",
+      "john",
+      "905678990"
+    ],
+    "medical_info": {
+      "blood_type": "",
+      "allergies": [],
+      "medications": [],
+      "conditions": []
+    }
+  },
+  "system_info": {
+    "platform": "Windows",
+    "hostname": "ASUS",
+    "local_ip": "192.168.0.5"
+  }
+}

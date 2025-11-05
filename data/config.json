@@ -1,0 +1,39 @@
+{
+  "user": {
+    "name": "mary",
+    "email": "mary@html.cpm",
+    "phone": "87698798689687",
+    "contacts": [
+      "Contact 1: +1234567890",
+      "Contact 2: +0987654321",
+      "Contact 3: +1122334455"
+    ]
+  },
+  "keywords": [
+    "help",
+    "save me",
+    "emergency",
+    "police",
+    "fire",
+    "ambulance",
+    "attack",
+    "assault",
+    "violence",
+    "danger",
+    "gun",
+    "knife",
+    "hurt",
+    "scared",
+    "trapped",
+    "bleeding",
+    "stop hitting",
+    "rape",
+    "kidnap",
+    "abuse",
+    "threat",
+    "weapon",
+    "pain"
+  ],
+  "theme": "futuristic_pink",
+  "setup_date": "2025-11-04T20:10:04.120497"
+}

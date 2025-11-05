@@ -1,0 +1,35 @@
+{
+  "timestamp": "2025-11-04T18:45:36.708994",
+  "alert_type": "emergency_alert",
+  "message": "\n\ud83d\udea8 EMERGENCY ALERT \ud83d\udea8\nUser: Demo User\nEmail: demo@example.com\nPhone: +1234567890\nReason: Test alert from command line\nTime: 2025-11-04 18:45:33\n\nLocation Information:\nCoordinates: 12.975300, 77.591000\nLocation: Bengaluru, KA, India\nMethod: ip_geolocation (city_level)\nUpdated: just now\n\nEmergency Contacts:\n\u2022 Emergency Contact 1: +1234567890 (Carrier)\n\u2022 Emergency Contact 2: +0987654321 (Carrier)\n\nMedical Information:\n\u2022 Blood Type: O+\n\u2022 Allergies: Demo Allergy\n\u2022 Medications: Demo Medication\n\u2022 Conditions: Demo Condition\n\nThis alert was generated automatically by HerShield Safety System.\n",
+  "location_data": {
+    "latitude": 12.9753,
+    "longitude": 77.591
+  },
+  "user_info": {
+    "name": "Demo User",
+    "email": "demo@example.com",
+    "phone": "+1234567890",
+    "emergency_contacts": [
+      "Emergency Contact 1: +1234567890 (Carrier)",
+      "Emergency Contact 2: +0987654321 (Carrier)"
+    ],
+    "medical_info": {
+      "blood_type": "O+",
+      "allergies": [
+        "Demo Allergy"
+      ],
+      "medications": [
+        "Demo Medication"
+      ],
+      "conditions": [
+        "Demo Condition"
+      ]
+    }
+  },
+  "system_info": {
+    "platform": "Windows",
+    "hostname": "ASUS",
+    "local_ip": "192.168.0.5"
+  }
+}

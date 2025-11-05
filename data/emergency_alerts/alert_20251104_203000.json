@@ -1,0 +1,17 @@
+{
+  "timestamp": "2025-11-04T20:30:00.593846",
+  "alert_type": "system_test",
+  "message": "System test alert",
+  "location_data": {
+    "latitude": 0,
+    "longitude": 0
+  },
+  "user_info": {
+    "test": true
+  },
+  "system_info": {
+    "platform": "Windows",
+    "hostname": "ASUS",
+    "local_ip": "192.168.0.5"
+  }
+}

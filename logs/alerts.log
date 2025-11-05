@@ -1,0 +1,33 @@
+
+[2025-11-04 18:45:33] EMERGENCY ALERT
+User: demo@example.com
+Reason: Test alert from command line
+Location URL: https://maps.google.com/?q=12.9753,77.591
+Location Status: available
+Location Method: ip_geolocation
+Location Accuracy: city_level
+Coordinates: 12.9753, 77.591
+Failed Services: email
+------------------------------------------------------------
+
+[2025-11-04 20:23:41] EMERGENCY ALERT
+User: mary@hotmail.com
+Reason: System test alert - please ignore
+Location URL: https://maps.google.com/?q=12.9753,77.591
+Location Status: available
+Location Method: ip_geolocation
+Location Accuracy: city_level
+Coordinates: 12.9753, 77.591
+Failed Services: sms
+------------------------------------------------------------
+
+[2025-11-04 20:30:01] EMERGENCY ALERT
+User: mary@hotmail.com
+Reason: System test alert - please ignore
+Location URL: https://maps.google.com/?q=12.9753,77.591
+Location Status: available
+Location Method: ip_geolocation
+Location Accuracy: city_level
+Coordinates: 12.9753, 77.591
+Failed Services: sms
+------------------------------------------------------------

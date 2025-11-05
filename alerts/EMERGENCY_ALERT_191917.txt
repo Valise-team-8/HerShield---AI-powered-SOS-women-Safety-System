@@ -1,0 +1,24 @@
+🚨 EMERGENCY VIOLENCE ALERT 🚨
+
+Alert ID: 191917
+Time: 2025-11-04 19:19:17
+Keywords Detected: help
+Spoken Text: "help help help help help help help help help help help help help help help help help help help help"
+
+Location: Bengaluru (12.9753, 77.5910)
+Map Link: https://maps.google.com/?q=12.9753,77.591
+
+Evidence Photo: evidence/emergency_20251104_191919.jpg
+
+Emergency Contacts:
+- +1234567890 (Emergency Contact 1)
+- +0987654321 (Emergency Contact 2)
+- Local Police: 100
+- Women Helpline: 1091
+
+⚠️ IMMEDIATE ACTION REQUIRED ⚠️
+1. Call emergency services immediately
+2. Contact the emergency contacts listed above
+3. Share this alert information
+
+This is an automated alert from HerShield Safety System.
