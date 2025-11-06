@@ -95,8 +95,15 @@ class EnhancedLocationService:
                         if data.get('country'):
                             address_parts.append(data['country'])
                         
-                        # Try to get detailed address using reverse geocoding
-                        detailed_address = self._get_detailed_address(lat, lon)
+                        # Build basic address first
+                        basic_address = ', '.join(address_parts) if address_parts else 'Location detected'
+                        
+                        # Try to get detailed address using reverse geocoding (non-blocking)
+                        detailed_address = None
+                        try:
+                            detailed_address = self._get_detailed_address(lat, lon)
+                        except:
+                            pass
                         
                         location_info = {
                             'latitude': lat,
@@ -104,11 +111,11 @@ class EnhancedLocationService:
                             'method': 'ip_geolocation',
                             'accuracy': 'city_level',
                             'timestamp': datetime.now().isoformat(),
-                            'city': data.get('city', ''),
-                            'region': data.get('region', data.get('regionName', '')),
-                            'country': data.get('country', data.get('countryCode', '')),
-                            'isp': data.get('isp', data.get('org', '')),
-                            'address': detailed_address or ', '.join(address_parts) or 'Address not available'
+                            'city': data.get('city', 'Unknown City'),
+                            'region': data.get('region', data.get('regionName', 'Unknown Region')),
+                            'country': data.get('country', data.get('countryCode', 'Unknown Country')),
+                            'isp': data.get('isp', data.get('org', 'Unknown ISP')),
+                            'address': detailed_address or basic_address
                         }
                         
                         self.logger.info(f"IP location: {lat}, {lon} ({location_info['city']})")

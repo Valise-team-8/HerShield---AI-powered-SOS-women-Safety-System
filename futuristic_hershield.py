@@ -4,22 +4,64 @@ HerShield Futuristic - Ultra-Modern Pink-Themed Women Safety App
 Sleek, elegant, and futuristic design with advanced animations
 """
 
-import customtkinter as ctk
 import tkinter as tk
 from tkinter import messagebox
 import tkinter.simpledialog
+
+# Try to import customtkinter, fallback to regular tkinter
+try:
+    import customtkinter as ctk
+    CUSTOM_TK_AVAILABLE = True
+    # Set futuristic pink theme
+    ctk.set_appearance_mode("dark")
+    ctk.set_default_color_theme("blue")
+except ImportError:
+    print("⚠️ CustomTkinter not available, using standard tkinter")
+    ctk = tk  # Use regular tkinter as fallback
+    CUSTOM_TK_AVAILABLE = False
 import threading
 import json
 import os
 import time
-import speech_recognition as sr
-import cv2
 from datetime import datetime
 import subprocess
-import numpy as np
-import librosa
-import pyaudio
 import uuid
+
+# Optional imports with fallbacks
+try:
+    import speech_recognition as sr
+    SPEECH_AVAILABLE = True
+except ImportError:
+    print("⚠️ Speech recognition not available")
+    SPEECH_AVAILABLE = False
+
+try:
+    import cv2
+    CV2_AVAILABLE = True
+except ImportError:
+    print("⚠️ OpenCV not available")
+    CV2_AVAILABLE = False
+
+try:
+    import numpy as np
+    NUMPY_AVAILABLE = True
+except ImportError:
+    print("⚠️ NumPy not available")
+    NUMPY_AVAILABLE = False
+
+try:
+    import librosa
+    LIBROSA_AVAILABLE = True
+except ImportError:
+    print("⚠️ Librosa not available")
+    LIBROSA_AVAILABLE = False
+
+try:
+    import pyaudio
+    PYAUDIO_AVAILABLE = True
+except ImportError:
+    print("⚠️ PyAudio not available")
+    PYAUDIO_AVAILABLE = False
 
 # Import enhanced core systems
 try:
@@ -37,9 +79,7 @@ except ImportError:
     ENHANCED_FEATURES = False
     FIREBASE_ENABLED = False
 
-# Set futuristic pink theme
-ctk.set_appearance_mode("dark")
-ctk.set_default_color_theme("blue")
+# Theme settings moved to import section
 
 # Custom pink color palette
 PINK_COLORS = {
@@ -140,11 +180,19 @@ KEYWORDS = [
 
 class FuturisticHerShield:
     def __init__(self):
-        self.root = ctk.CTk()
+        if CUSTOM_TK_AVAILABLE:
+            self.root = ctk.CTk()
+        else:
+            self.root = tk.Tk()
         self.setup_futuristic_window()
         self.setup_variables()
         self.create_futuristic_ui()
         self.load_config()
+
+        # System state
+        self.listening = False
+        self.alert_count = 0
+        self.monitoring_thread = None
 
         # System state
         self.listening = False
@@ -169,17 +217,62 @@ class FuturisticHerShield:
         # Animation variables
         self.pulse_state = 0
         self.start_animations()
+        
+        # Cleanup old evidence files in background
+        self.cleanup_evidence_async()
 
     def setup_futuristic_window(self):
         """Setup futuristic window with pink theme"""
-        self.root.title("HerShield Futuristic - Women Safety Guardian")
+        self.root.title("🛡️ HerShield Futuristic - Ultra-Fast Guardian")
         self.root.geometry("1200x800")
-        self.root.configure(fg_color=PINK_COLORS["background"])
+        
+        if CUSTOM_TK_AVAILABLE:
+            self.root.configure(fg_color=PINK_COLORS["background"])
+        else:
+            self.root.configure(bg=PINK_COLORS["background"])
 
         # Center window
-        x = (self.root.winfo_screenwidth() // 2) - 600
-        y = (self.root.winfo_screenheight() // 2) - 400
-        self.root.geometry(f"1200x800+{x}+{y}")
+        try:
+            x = (self.root.winfo_screenwidth() // 2) - 600
+            y = (self.root.winfo_screenheight() // 2) - 400
+            self.root.geometry(f"1200x800+{x}+{y}")
+        except:
+            pass  # Skip centering if it fails
+            
+    def load_enhanced_features_async(self):
+        """Load enhanced features in background"""
+        def load_background():
+            global ENHANCED_FEATURES, FIREBASE_ENABLED
+            
+            # Update status
+            self.root.after(0, lambda: self.update_status("🔄 Loading enhanced AI systems..."))
+            
+            # Import enhanced features
+            success = lazy_import_enhanced_features()
+            
+            if success:
+                try:
+                    from core.escalation_system import escalation_system
+                    from core.alert_acknowledgment import acknowledgment_system
+                    from core.enhanced_location_service import EnhancedLocationService
+                    
+                    # Initialize components
+                    self.location_service = EnhancedLocationService()
+                    acknowledgment_system.start_monitoring()
+                    
+                    # Setup easy-use features
+                    self.setup_easy_use_features()
+                    
+                    self.root.after(0, lambda: self.update_status("✅ All systems operational - Ready to protect!"))
+                    
+                except Exception as e:
+                    print(f"Enhanced features initialization error: {e}")
+                    self.root.after(0, lambda: self.update_status("⚠️ Basic mode - Core protection active"))
+            else:
+                self.root.after(0, lambda: self.update_status("⚠️ Basic mode - Core protection active"))
+        
+        # Start background loading
+        threading.Thread(target=load_background, daemon=True).start()
 
         # Make window look futuristic
         self.root.resizable(True, True)
@@ -547,6 +640,18 @@ class FuturisticHerShield:
     def start_animations(self):
         """Start futuristic animations"""
         self.animate_pulse()
+        
+    def cleanup_evidence_async(self):
+        """Cleanup old evidence files in background"""
+        def cleanup_background():
+            try:
+                from core.camera_capture import cleanup_evidence_files
+                cleanup_evidence_files()
+                print("✅ Evidence cleanup completed")
+            except Exception as e:
+                print(f"Evidence cleanup error: {e}")
+        
+        threading.Thread(target=cleanup_background, daemon=True).start()
 
     def animate_pulse(self):
         """Create pulsing animation effect"""
@@ -735,71 +840,81 @@ class FuturisticHerShield:
             print(f"System readiness check error: {e}")
 
     def voice_monitoring_loop(self):
-        """Ultra-responsive voice monitoring with instant threat detection"""
+        """Simplified voice monitoring for fast startup"""
+        if not SPEECH_AVAILABLE:
+            self.root.after(0, lambda: self.update_status("⚠️ Voice recognition not available"))
+            return
+            
         try:
+            import speech_recognition as sr
             r = sr.Recognizer()
             mic = sr.Microphone()
 
-            # Setup enhanced audio analysis for instant response
-            self.setup_enhanced_audio_analysis()
-
-            # Optimized microphone calibration for faster response
+            # Quick microphone setup
             with mic as source:
-                # Reduced calibration time
-                r.adjust_for_ambient_noise(source, duration=0.5)
-                r.energy_threshold = 300  # Lower threshold for better sensitivity
-                r.dynamic_energy_threshold = True
-                r.pause_threshold = 0.5  # Shorter pause detection
-                r.phrase_threshold = 0.2  # Faster phrase detection
+                r.adjust_for_ambient_noise(source, duration=1)
+                r.energy_threshold = 300
+                r.pause_threshold = 0.8
 
             self.root.after(0, lambda: self.update_status(
-                "🎤 Ultra-Guardian Active - Instant Response Mode"))
+                "🎤 Voice Guardian Active - Listening for keywords"))
 
-            # Start instant location tracking
-            self.start_continuous_location_tracking()
+            keywords = ["help", "emergency", "danger", "police", "fire", "save me", "attack", "stop"]
 
             while self.listening:
                 try:
                     with mic as source:
-                        # Ultra-fast audio capture with shorter timeout
-                        audio = r.listen(source, timeout=1,
-                                         phrase_time_limit=5)
-                        audio_data = np.frombuffer(
-                            audio.get_raw_data(), dtype=np.int16)
+                        audio = r.listen(source, timeout=1, phrase_time_limit=4)
 
-                    # INSTANT threat analysis - parallel processing
-                    threat_thread = threading.Thread(
-                        target=self.instant_threat_analysis,
-                        args=(audio_data,),
-                        daemon=True
-                    )
-                    threat_thread.start()
-
-                    # INSTANT speech recognition - multiple engines
-                    recognition_thread = threading.Thread(
-                        target=self.instant_speech_recognition,
-                        args=(audio,),
-                        daemon=True
-                    )
-                    recognition_thread.start()
+                    # Simple speech recognition
+                    text = r.recognize_google(audio).lower()
+                    
+                    # Check for keywords
+                    found_keywords = [kw for kw in keywords if kw in text]
+                    
+                    if found_keywords:
+                        self.root.after(0, lambda: self.trigger_voice_alert(text, found_keywords))
+                        break
 
                 except sr.WaitTimeoutError:
-                    # Continue monitoring - no delay
+                    pass
+                except sr.UnknownValueError:
                     pass
                 except Exception as e:
-                    self.root.after(0, lambda: self.update_status(
-                        f"⚠️ Monitoring: {str(e)[:20]}"))
-                    time.sleep(0.1)  # Minimal delay
+                    self.root.after(0, lambda: self.update_status(f"⚠️ Voice: {str(e)[:20]}"))
+                    time.sleep(1)
 
         except Exception as e:
             self.root.after(0, lambda: messagebox.showerror(
-                "Error", f"Voice monitoring failed: {e}"))
+                "Voice Error", f"Voice monitoring failed: {e}"))
 
+    def trigger_voice_alert(self, text, keywords):
+        """Trigger alert when voice keywords are detected"""
+        try:
+            self.update_status(f"🚨 VOICE EMERGENCY: {', '.join(keywords)}")
+            
+            # Show alert dialog
+            response = messagebox.askyesno(
+                "🎤 VOICE EMERGENCY DETECTED",
+                f"Emergency keywords detected!\n\n" +
+                f"Heard: '{text}'\n" +
+                f"Keywords: {', '.join(keywords)}\n\n" +
+                f"Are you in danger?\n\n" +
+                f"YES = Send emergency alerts\n" +
+                f"NO = False alarm"
+            )
+            
+            if response:
+                self.emergency_alert()
+            else:
+                self.update_status("✅ Voice alert acknowledged - Continuing monitoring")
+                
+        except Exception as e:
+            print(f"Voice alert error: {e}")
+            
     def setup_enhanced_audio_analysis(self):
-        """Setup ultra-sensitive audio analysis for instant detection"""
-        self.sample_rate = 22050  # Higher sample rate for better detection
-        self.frame_length = 1024   # Smaller frames for faster processing
-        self.hop_length = 256      # Smaller hops for real-time analysis
+        """Placeholder for audio analysis setup"""
+        pass
 
         # Ultra-sensitive threat detection thresholds
         self.scream_threshold = 0.6      # Lower threshold for instant detection
@@ -1370,19 +1485,26 @@ class FuturisticHerShield:
                 text=f"📍 {address[:60]}..."
             ))
 
-            # Update coordinates display
-            self.root.after(0, lambda: self.coordinates_display.configure(
-                text=f"📍 Coordinates: {lat:.6f}, {lon:.6f}"
-            ))
+            # Update coordinates display safely
+            try:
+                if hasattr(self, 'coordinates_display') and self.coordinates_display.winfo_exists():
+                    self.root.after(0, lambda: self.coordinates_display.configure(
+                        text=f"📍 Coordinates: {lat:.6f}, {lon:.6f}"
+                    ))
+            except Exception as e:
+                print(f"Coordinates display update error: {e}")
 
-            # Update accuracy display
-            accuracy_color = "#00ff00" if accuracy < 50 else "#ffff00" if accuracy < 200 else "#ff8800"
-            accuracy_text = f"🎯 Accuracy: ±{accuracy}m via {method}"
-
-            self.root.after(0, lambda: self.accuracy_display.configure(
-                text=accuracy_text,
-                text_color=accuracy_color
-            ))
+            # Update accuracy display safely
+            try:
+                if hasattr(self, 'accuracy_display') and self.accuracy_display.winfo_exists():
+                    accuracy_color = "#00ff00" if accuracy < 50 else "#ffff00" if accuracy < 200 else "#ff8800"
+                    accuracy_text = f"🎯 Accuracy: ±{accuracy}m via {method}"
+                    self.root.after(0, lambda: self.accuracy_display.configure(
+                        text=accuracy_text,
+                        text_color=accuracy_color
+                    ))
+            except Exception as e:
+                print(f"Accuracy display update error: {e}")
 
         except Exception as e:
             print(f"Location display update error: {e}")
@@ -3296,19 +3418,31 @@ class InstantVoiceAlertDialog:
         self.setup_instant_voice_dialog(text, keywords, severity, alert_id)
 
     def setup_instant_voice_dialog(self, text, keywords, severity, alert_id):
-        """Setup instant voice alert dialog"""
-        self.dialog.title("🎤 INSTANT VOICE EMERGENCY")
-        self.dialog.geometry("700x600")
+        """Setup instant voice alert dialog with futuristic styling"""
+        self.dialog.title("🎤 FUTURISTIC VOICE EMERGENCY")
+        self.dialog.geometry("800x700")
+        
+        # Center the dialog
+        try:
+            x = (self.dialog.winfo_screenwidth() // 2) - 400
+            y = (self.dialog.winfo_screenheight() // 2) - 350
+            self.dialog.geometry(f"800x700+{x}+{y}")
+        except:
+            pass
 
-        # Severity-based colors
+        # Use same futuristic theme as main window
+        if CUSTOM_TK_AVAILABLE:
+            self.dialog.configure(fg_color=PINK_COLORS["background"])
+        else:
+            self.dialog.configure(bg=PINK_COLORS["background"])
+
+        # Severity-based accent colors
         severity_colors = {
-            "CRITICAL": "#8b0000",
-            "HIGH": "#dc143c",
+            "CRITICAL": "#ff0000",
+            "HIGH": "#ff4500", 
             "MEDIUM": "#ff8c00"
         }
-
-        self.dialog.configure(
-            fg_color=severity_colors.get(severity, "#dc143c"))
+        accent_color = severity_colors.get(severity, "#ff4500")
 
         # Priority settings
         self.dialog.transient()

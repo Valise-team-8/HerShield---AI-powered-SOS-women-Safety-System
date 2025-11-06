@@ -9,28 +9,30 @@ def initialize_firebase():
         try:
             # Try real service account key first
             if os.path.exists("serviceAccountKey.json"):
-                # Load and fix the credentials
-                import json
-                with open("serviceAccountKey.json", 'r') as f:
-                    key_data = json.load(f)
-                
-                # Create credentials dict with fixed private key
-                cred_dict = {
-                    "type": key_data["type"],
-                    "project_id": key_data["project_id"],
-                    "private_key_id": key_data["private_key_id"],
-                    "private_key": key_data["private_key"].replace('\\n', '\n'),  # Fix newlines
-                    "client_email": key_data["client_email"],
-                    "client_id": key_data["client_id"],
-                    "auth_uri": key_data["auth_uri"],
-                    "token_uri": key_data["token_uri"]
-                }
-                
-                cred = credentials.Certificate(cred_dict)
-                firebase_admin.initialize_app(cred, {
-                    'databaseURL': 'https://hershield-8eef0-default-rtdb.firebaseio.com/'  # Your project URL
-                })
-                print("✅ Firebase initialized with real credentials")
+                try:
+                    # Load and fix the key format
+                    import json
+                    with open("serviceAccountKey.json", 'r') as f:
+                        key_data = json.load(f)
+                    
+                    # Fix the private key format if needed
+                    if "private_key" in key_data:
+                        private_key = key_data["private_key"]
+                        # Replace escaped newlines with actual newlines
+                        if "\\n" in private_key:
+                            key_data["private_key"] = private_key.replace("\\n", "\n")
+                    
+                    cred = credentials.Certificate(key_data)
+                    firebase_admin.initialize_app(cred, {
+                        'databaseURL': 'https://hershield-8eef0-default-rtdb.firebaseio.com/'
+                    })
+                    print("✅ Firebase initialized with real credentials")
+                    return True
+                except Exception as key_error:
+                    print(f"⚠️ Firebase key error: {str(key_error)[:100]}...")
+                    print("💡 Tip: Generate a new service account key from Firebase Console")
+                    print("📋 Using local storage mode instead")
+                    return False
             elif os.path.exists("serviceAccountKey_DEMO.json"):
                 print("⚠️  Using demo Firebase credentials - replace with real ones")
                 # Don't actually initialize with demo credentials

@@ -273,3 +273,57 @@ if __name__ == "__main__":
         print(f"✅ Emergency evidence: {evidence}")
     else:
         print("❌ No camera available for testing")
+    def cleanup_old_evidence(self, max_age_hours=24, max_files=50):
+        """Clean up old evidence files to save space"""
+        try:
+            evidence_dir = "data/evidence"
+            if not os.path.exists(evidence_dir):
+                return
+            
+            import glob
+            import time
+            
+            # Get all evidence files
+            files = glob.glob(os.path.join(evidence_dir, "*"))
+            
+            # Sort by modification time (newest first)
+            files.sort(key=os.path.getmtime, reverse=True)
+            
+            current_time = time.time()
+            files_removed = 0
+            
+            # Remove files older than max_age_hours
+            for file_path in files:
+                file_age = current_time - os.path.getmtime(file_path)
+                if file_age > (max_age_hours * 3600):  # Convert hours to seconds
+                    try:
+                        os.remove(file_path)
+                        files_removed += 1
+                        self.logger.info(f"Removed old evidence: {os.path.basename(file_path)}")
+                    except Exception as e:
+                        self.logger.error(f"Failed to remove {file_path}: {e}")
+            
+            # Keep only the most recent max_files
+            if len(files) > max_files:
+                for file_path in files[max_files:]:
+                    try:
+                        os.remove(file_path)
+                        files_removed += 1
+                        self.logger.info(f"Removed excess evidence: {os.path.basename(file_path)}")
+                    except Exception as e:
+                        self.logger.error(f"Failed to remove {file_path}: {e}")
+            
+            if files_removed > 0:
+                self.logger.info(f"Cleanup complete: {files_removed} files removed")
+                
+        except Exception as e:
+            self.logger.error(f"Evidence cleanup error: {e}")
+
+# Global cleanup function
+def cleanup_evidence_files():
+    """Global function to cleanup evidence files"""
+    try:
+        camera = EnhancedCameraCapture()
+        camera.cleanup_old_evidence(max_age_hours=2, max_files=20)  # Keep only 2 hours, max 20 files
+    except Exception as e:
+        print(f"Evidence cleanup error: {e}")

@@ -343,5 +343,21 @@ def setup_new_user():
         print(f"\n❌ Setup incomplete: {message}")
         return False
 
+    def get_voice_settings(self):
+        """Get voice recognition settings"""
+        return self.config.get("voice_settings", {
+            "enabled": True,
+            "sensitivity": 0.5,
+            "language": "en-US",
+            "keywords": ["help", "emergency", "danger", "police", "fire", "save me"]
+        })
+    
+    def update_voice_settings(self, settings):
+        """Update voice recognition settings"""
+        if "voice_settings" not in self.config:
+            self.config["voice_settings"] = {}
+        self.config["voice_settings"].update(settings)
+        self.save_config()
+
 if __name__ == "__main__":
     setup_new_user()
