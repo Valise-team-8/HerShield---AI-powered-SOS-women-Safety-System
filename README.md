@@ -2,6 +2,20 @@
 
 **An advanced AI-powered safety system designed to protect women through intelligent threat detection, voice recognition, and automated emergency response.**
 
+## 📸 Screenshots
+
+### Main Application Interface
+![HerShield Main Interface](screenshots/HerShield1.png)
+*Futuristic HerShield interface with voice protection and emergency controls*
+
+### Emergency Protocol Window
+![Emergency Protocol Active](screenshots/HerShield2.png)
+*Emergency protocol activation window with detected keywords and alert status*
+
+### Emergency Services Contact
+![Contacting Emergency Services](screenshots/HerShield3.png)
+*Animated window showing emergency services being contacted with alerts and sounds*
+
 ## 🚀 Quick Start
 
 ```bash
