@@ -72,7 +72,7 @@ def setup_firebase():
     print("\\n⏳ After downloading the new key file:")
     print("1. Replace serviceAccountKey.json in this folder")
     print("2. Run: python test_firebase_simple.py")
-    print("3. Run: python futuristic_hershield.py")
+    print("3. Run: python main.py")
     
     # Wait for user to complete setup
     input("\\n📥 Press Enter after you've downloaded and replaced the key file...")

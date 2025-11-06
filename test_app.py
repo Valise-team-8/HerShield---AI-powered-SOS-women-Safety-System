@@ -10,7 +10,7 @@ import threading
 def test_import():
     """Test if the application can be imported"""
     try:
-        from futuristic_hershield import FuturisticHerShield
+        from main import FuturisticHerShield
         print("✅ Import successful")
         return True
     except Exception as e:
@@ -20,7 +20,7 @@ def test_import():
 def test_initialization():
     """Test if the application can be initialized"""
     try:
-        from futuristic_hershield import FuturisticHerShield
+        from main import FuturisticHerShield
         app = FuturisticHerShield()
         print("✅ Initialization successful")
         
@@ -35,7 +35,7 @@ def test_initialization():
 def test_quick_run():
     """Test quick run and stop"""
     try:
-        from futuristic_hershield import FuturisticHerShield
+        from main import FuturisticHerShield
         app = FuturisticHerShield()
         
         # Start app in thread

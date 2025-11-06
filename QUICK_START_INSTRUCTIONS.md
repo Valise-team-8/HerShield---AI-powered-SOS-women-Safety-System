@@ -4,7 +4,7 @@
 
 ### **Step 1: Start the App**
 ```bash
-python futuristic_hershield.py
+python main.py
 ```
 
 ### **Step 2: IMPORTANT - Click the Big Button!**
@@ -63,7 +63,7 @@ Even without voice, you have:
 
 ## 🎯 **Quick Test:**
 
-1. **Start app:** `python futuristic_hershield.py`
+1. **Start app:** `python main.py`
 2. **Click:** "⚡ ACTIVATE INSTANT GUARDIAN ⚡"
 3. **Say:** "help me" clearly
 4. **Or Press:** Ctrl+E for manual emergency

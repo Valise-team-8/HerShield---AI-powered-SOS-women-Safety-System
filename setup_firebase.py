@@ -175,7 +175,7 @@ def main():
         print("\n🎉 Firebase setup complete!")
         print("\n✅ Your HerShield project is now connected to Firebase!")
         print("\n🚀 Next steps:")
-        print("1. Run: python futuristic_hershield.py")
+        print("1. Run: python main.py")
         print("2. Complete user setup (name, email, contacts)")
         print("3. Test the system with 'TEST SYSTEM' button")
         print("4. Check Firebase console to see your data")

@@ -62,7 +62,7 @@ You should see:
 
 ### **Step 10: Run HerShield**
 ```bash
-python futuristic_hershield.py
+python main.py
 ```
 
 You should see:

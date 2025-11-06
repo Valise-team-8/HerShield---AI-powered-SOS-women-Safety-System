@@ -13,7 +13,7 @@ cd HerShield---AI-powered-SOS-women-Safety-System
 pip install -r requirements.txt
 
 # Run the application
-python futuristic_hershield.py
+python main.py
 ```
 
 ## ✨ Features
@@ -83,7 +83,7 @@ pip install pyttsx3 plyer tkinter customtkinter
 
 ### Starting the System
 ```bash
-python futuristic_hershield.py
+python main.py
 ```
 
 ### First-Time Setup
@@ -111,7 +111,7 @@ The system recognizes 100+ emergency keywords including:
 
 ```
 HerShield/
-├── futuristic_hershield.py    # Main application
+├── main.py                    # Main application
 ├── core/                      # Core system modules
 │   ├── voice_recognition.py   # Voice detection engine
 │   ├── ai_threat_detection.py # AI-powered threat analysis

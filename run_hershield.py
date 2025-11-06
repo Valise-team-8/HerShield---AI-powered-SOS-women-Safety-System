@@ -22,7 +22,7 @@ def main():
     
     try:
         # Import and run the futuristic application
-        from futuristic_hershield import main as futuristic_main
+        from main import main as futuristic_main
         futuristic_main()
     except ImportError as e:
         print(f"❌ Import Error: {e}")

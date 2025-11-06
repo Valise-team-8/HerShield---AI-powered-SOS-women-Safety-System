@@ -35,11 +35,11 @@ try:
     
     print("4. Testing main app import...")
     # Don't actually run the GUI, just test if it imports
-    import futuristic_hershield
+    import main
     print("   ✅ Main app imports OK")
     
     print("\n🎉 All tests passed! HerShield should start properly.")
-    print("Run: python futuristic_hershield.py")
+    print("Run: python main.py")
     
 except Exception as e:
     print(f"\n❌ Error: {e}")
