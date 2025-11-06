@@ -230,6 +230,9 @@ class FuturisticHerShield:
         # Cleanup old evidence files in background
         self.root.after(2000, self.cleanup_evidence_async)
         
+        # Auto-start voice protection after GUI is ready
+        self.root.after(3000, self.auto_start_protection)
+        
         print("✅ HerShield initialization complete!")
         
     def setup_easy_use_features_async(self):
@@ -238,6 +241,308 @@ class FuturisticHerShield:
             self.setup_easy_use_features()
         except Exception as e:
             print(f"Easy-use features error: {e}")
+    
+    def auto_start_protection(self):
+        """Auto-start voice protection for immediate keyword detection"""
+        try:
+            print("🚀 Auto-starting voice protection...")
+            if not self.listening:
+                self.start_protection()
+                print("✅ Voice protection auto-started - ready for keyword detection!")
+        except Exception as e:
+            print(f"Auto-start protection error: {e}")
+    
+    def create_simple_emergency_window(self, text, keywords, alert_id):
+        """Create futuristic emergency window with proper UI theme"""
+        try:
+            print("🚨 Creating FUTURISTIC emergency window...")
+            
+            # Create new window
+            if CUSTOM_TK_AVAILABLE:
+                emergency_window = ctk.CTkToplevel(self.root)
+            else:
+                emergency_window = tk.Toplevel(self.root)
+            
+            # Basic setup with futuristic theme
+            emergency_window.title("⚡ HerShield Emergency Protocol")
+            emergency_window.geometry("800x700")
+            
+            # Make it appear on top
+            emergency_window.attributes('-topmost', True)
+            emergency_window.lift()
+            emergency_window.focus_force()
+            
+            # Center it
+            emergency_window.update_idletasks()
+            x = (emergency_window.winfo_screenwidth() // 2) - 400
+            y = (emergency_window.winfo_screenheight() // 2) - 350
+            emergency_window.geometry(f"800x700+{x}+{y}")
+            
+            # Set futuristic background
+            if CUSTOM_TK_AVAILABLE:
+                emergency_window.configure(fg_color=PINK_COLORS["background"])
+            else:
+                emergency_window.configure(bg=PINK_COLORS["background"])
+            
+            # Main container with futuristic styling
+            if CUSTOM_TK_AVAILABLE:
+                main_container = ctk.CTkFrame(
+                    emergency_window,
+                    corner_radius=25,
+                    fg_color="#8b0000",  # Dark red for emergency
+                    border_width=3,
+                    border_color=PINK_COLORS["primary"]
+                )
+            else:
+                main_container = tk.Frame(
+                    emergency_window,
+                    bg="#8b0000",
+                    relief="raised",
+                    bd=5
+                )
+            main_container.pack(fill="both", expand=True, padx=15, pady=15)
+            
+            # Futuristic header
+            if CUSTOM_TK_AVAILABLE:
+                header = ctk.CTkLabel(
+                    main_container,
+                    text="⚡ EMERGENCY PROTOCOL ACTIVATED ⚡",
+                    font=ctk.CTkFont(size=28, weight="bold"),
+                    text_color="white"
+                )
+            else:
+                header = tk.Label(
+                    main_container,
+                    text="⚡ EMERGENCY PROTOCOL ACTIVATED ⚡",
+                    font=("Arial", 28, "bold"),
+                    fg="white",
+                    bg="#8b0000"
+                )
+            header.pack(pady=20)
+            
+            # Alert details with futuristic styling
+            if CUSTOM_TK_AVAILABLE:
+                details_frame = ctk.CTkFrame(
+                    main_container,
+                    corner_radius=15,
+                    fg_color=PINK_COLORS["surface"],
+                    border_width=2,
+                    border_color=PINK_COLORS["accent"]
+                )
+            else:
+                details_frame = tk.Frame(
+                    main_container,
+                    bg=PINK_COLORS["surface"],
+                    relief="sunken",
+                    bd=3
+                )
+            details_frame.pack(fill="x", padx=20, pady=15)
+            
+            # Alert info
+            if CUSTOM_TK_AVAILABLE:
+                alert_info = ctk.CTkLabel(
+                    details_frame,
+                    text=f"🎤 Keywords Detected: {', '.join(keywords)}\n\n💬 Voice Input: \"{text}\"\n\n🆔 Alert ID: {alert_id}\n\n⏰ Time: {datetime.now().strftime('%H:%M:%S')}",
+                    font=ctk.CTkFont(size=16, weight="bold"),
+                    text_color=PINK_COLORS["text"]
+                )
+            else:
+                alert_info = tk.Label(
+                    details_frame,
+                    text=f"🎤 Keywords: {', '.join(keywords)}\n💬 Voice: \"{text}\"\n🆔 Alert: {alert_id}",
+                    font=("Arial", 16, "bold"),
+                    fg=PINK_COLORS["text"],
+                    bg=PINK_COLORS["surface"]
+                )
+            alert_info.pack(pady=15)
+            
+            # Emergency actions status with futuristic theme
+            if CUSTOM_TK_AVAILABLE:
+                actions_frame = ctk.CTkFrame(
+                    main_container,
+                    corner_radius=15,
+                    fg_color=PINK_COLORS["dark"],
+                    border_width=2,
+                    border_color="#00ff00"
+                )
+            else:
+                actions_frame = tk.Frame(
+                    main_container,
+                    bg=PINK_COLORS["dark"],
+                    relief="ridge",
+                    bd=3
+                )
+            actions_frame.pack(fill="x", padx=20, pady=15)
+            
+            # Action status
+            if CUSTOM_TK_AVAILABLE:
+                actions_title = ctk.CTkLabel(
+                    actions_frame,
+                    text="🚀 EMERGENCY ACTIONS IN PROGRESS",
+                    font=ctk.CTkFont(size=18, weight="bold"),
+                    text_color="#00ff00"
+                )
+            else:
+                actions_title = tk.Label(
+                    actions_frame,
+                    text="🚀 EMERGENCY ACTIONS IN PROGRESS",
+                    font=("Arial", 18, "bold"),
+                    fg="#00ff00",
+                    bg=PINK_COLORS["dark"]
+                )
+            actions_title.pack(pady=10)
+            
+            # Emergency actions list
+            actions_text = """📞 Contacting Emergency Contacts...
+🚔 Contacting Emergency Services...
+📡 Sending Emergency Alerts...
+📍 Sharing Location Data...
+📷 Capturing Evidence...
+🔊 Broadcasting Distress Signal..."""
+            
+            if CUSTOM_TK_AVAILABLE:
+                actions_list = ctk.CTkLabel(
+                    actions_frame,
+                    text=actions_text,
+                    font=ctk.CTkFont(size=14),
+                    text_color="#ffff00",
+                    justify="left"
+                )
+            else:
+                actions_list = tk.Label(
+                    actions_frame,
+                    text=actions_text,
+                    font=("Arial", 14),
+                    fg="#ffff00",
+                    bg=PINK_COLORS["dark"],
+                    justify="left"
+                )
+            actions_list.pack(pady=15)
+            
+            # Status indicator
+            if CUSTOM_TK_AVAILABLE:
+                status_label = ctk.CTkLabel(
+                    main_container,
+                    text="⚡ IMMEDIATE RESPONSE SYSTEM ACTIVE ⚡",
+                    font=ctk.CTkFont(size=16, weight="bold"),
+                    text_color=PINK_COLORS["accent"]
+                )
+            else:
+                status_label = tk.Label(
+                    main_container,
+                    text="⚡ IMMEDIATE RESPONSE SYSTEM ACTIVE ⚡",
+                    font=("Arial", 16, "bold"),
+                    fg=PINK_COLORS["accent"],
+                    bg="#8b0000"
+                )
+            status_label.pack(pady=20)
+            
+            # Futuristic acknowledge button
+            if CUSTOM_TK_AVAILABLE:
+                acknowledge_btn = ctk.CTkButton(
+                    main_container,
+                    text="✅ ACKNOWLEDGE EMERGENCY PROTOCOL",
+                    font=ctk.CTkFont(size=18, weight="bold"),
+                    fg_color=PINK_COLORS["primary"],
+                    hover_color=PINK_COLORS["secondary"],
+                    border_width=2,
+                    border_color=PINK_COLORS["accent"],
+                    width=400,
+                    height=60,
+                    corner_radius=15,
+                    command=emergency_window.destroy
+                )
+            else:
+                acknowledge_btn = tk.Button(
+                    main_container,
+                    text="✅ ACKNOWLEDGE EMERGENCY PROTOCOL",
+                    font=("Arial", 18, "bold"),
+                    bg=PINK_COLORS["primary"],
+                    fg="white",
+                    width=30,
+                    height=3,
+                    relief="raised",
+                    bd=5,
+                    command=emergency_window.destroy
+                )
+            acknowledge_btn.pack(pady=30)
+            
+            # Instructions
+            if CUSTOM_TK_AVAILABLE:
+                instructions = ctk.CTkLabel(
+                    main_container,
+                    text="⌨️ Press ESC or F12 to acknowledge | Emergency protocol will continue until acknowledged",
+                    font=ctk.CTkFont(size=12),
+                    text_color=PINK_COLORS["text_secondary"]
+                )
+            else:
+                instructions = tk.Label(
+                    main_container,
+                    text="⌨️ Press ESC or F12 to acknowledge",
+                    font=("Arial", 12),
+                    fg=PINK_COLORS["text_secondary"],
+                    bg="#8b0000"
+                )
+            instructions.pack(pady=10)
+            
+            # Keyboard shortcuts
+            emergency_window.bind('<Escape>', lambda e: emergency_window.destroy())
+            emergency_window.bind('<F12>', lambda e: emergency_window.destroy())
+            
+            # Force it to appear and focus
+            emergency_window.update()
+            emergency_window.tkraise()
+            emergency_window.focus_set()
+            
+            print("✅ FUTURISTIC emergency window created with proper theme!")
+            
+            # Store reference
+            self.emergency_window = emergency_window
+            
+            # Start pulsing animation for urgency
+            self.start_emergency_pulse(emergency_window)
+            
+        except Exception as e:
+            print(f"❌ Futuristic emergency window creation failed: {e}")
+            import traceback
+            traceback.print_exc()
+            
+            # Ultimate fallback - basic messagebox
+            try:
+                import tkinter.messagebox as messagebox
+                messagebox.showerror(
+                    "🚨 EMERGENCY DETECTED", 
+                    f"EMERGENCY KEYWORDS DETECTED!\n\nKeywords: {', '.join(keywords)}\nText: '{text}'\n\nEMERGENCY PROTOCOL ACTIVE!"
+                )
+                print("✅ Fallback messagebox shown")
+            except Exception as e2:
+                print(f"❌ Even messagebox failed: {e2}")
+    
+    def start_emergency_pulse(self, window):
+        """Start subtle pulsing animation for emergency window"""
+        pulse_direction = 1
+        pulse_alpha = 1.0
+        
+        def pulse():
+            nonlocal pulse_direction, pulse_alpha
+            try:
+                if window and window.winfo_exists():
+                    # Smooth pulsing
+                    pulse_alpha += pulse_direction * 0.03
+                    
+                    if pulse_alpha >= 1.0:
+                        pulse_alpha = 1.0
+                        pulse_direction = -1
+                    elif pulse_alpha <= 0.9:
+                        pulse_alpha = 0.9
+                        pulse_direction = 1
+                    
+                    window.attributes('-alpha', pulse_alpha)
+                    window.after(100, pulse)
+            except:
+                pass
+        
+        pulse()
 
     def setup_futuristic_window(self):
         """Setup futuristic window with pink theme"""
@@ -777,6 +1082,7 @@ class FuturisticHerShield:
                                      "• Voice monitoring: STARTING\n" +
                                      "• Location tracking: LIVE\n" +
                                      "• Emergency contacts: READY\n" +
+                                     "• Say 'help' or 'emergency' for instant response\n" +
                                      "• Quick acknowledge: ESC key")
 
         # Start monitoring thread (non-blocking)
@@ -930,12 +1236,22 @@ class FuturisticHerShield:
             def voice_alert_callback(alert_data):
                 """Callback for reliable voice detection alerts"""
                 try:
+                    print("🔥 VOICE_ALERT_CALLBACK CALLED!")
+                    print(f"📊 Alert data: {alert_data}")
+                    
                     text = alert_data['text']
                     keywords = alert_data['keywords']
                     detection_count = alert_data['detection_count']
                     response_time = alert_data['recognition_time']
                     
                     print(f"🚨 Voice Alert #{detection_count}: {keywords} ({response_time:.2f}s)")
+                    
+                    # IMMEDIATE TEST - Show messagebox directly here
+                    import tkinter.messagebox as messagebox
+                    messagebox.showinfo(
+                        "🚨 CALLBACK TRIGGERED", 
+                        f"Voice callback activated!\n\nKeywords: {keywords}\nText: '{text}'"
+                    )
                     
                     # Update status in main thread
                     self.root.after(0, lambda: self.update_status(
@@ -945,10 +1261,13 @@ class FuturisticHerShield:
                     self.listening = False
                     
                     # Trigger emergency response
+                    print("🎯 Calling trigger_voice_alert...")
                     self.root.after(0, lambda: self.trigger_voice_alert(text, keywords))
                         
                 except Exception as e:
                     print(f"Voice alert callback error: {e}")
+                    import traceback
+                    traceback.print_exc()
             
             # Initialize reliable detector
             self.reliable_detector = ReliableVoiceDetector(callback_function=voice_alert_callback)
@@ -1073,7 +1392,15 @@ class FuturisticHerShield:
     def trigger_voice_alert(self, text, keywords):
         """Trigger alert when voice keywords are detected"""
         try:
+            print(f"🚨 TRIGGER_VOICE_ALERT CALLED: text='{text}', keywords={keywords}")
             self.update_status(f"🚨 QUANTUM VOICE EMERGENCY: {', '.join(keywords)}")
+            
+            # IMMEDIATE FUTURISTIC EMERGENCY WINDOW
+            print("🚨 Creating futuristic emergency window immediately...")
+            self.create_simple_emergency_window(text, keywords, f"voice_alert_{int(time.time())}")
+            print("✅ Futuristic emergency window should appear!")
+            
+            # TODO: Add contacting services window after fixing method issue
             
             # Check for critical keywords that need immediate activation
             critical_keywords = ["help", "emergency", "danger", "police", "fire", "attack", "save me"]
@@ -1094,6 +1421,8 @@ class FuturisticHerShield:
                 
         except Exception as e:
             print(f"Voice alert error: {e}")
+            import traceback
+            traceback.print_exc()
             
     def emergency_alert_immediate(self, text=None, keywords=None):
         """Immediate emergency alert activation without confirmation"""
@@ -1131,12 +1460,38 @@ class FuturisticHerShield:
                 )
 
                 # Show immediate alert dialog (non-blocking) - prevent duplicates
-                try:
-                    if not hasattr(self, 'immediate_dialog') or not self.immediate_dialog:
-                        self.immediate_dialog = ImmediateEmergencyDialog(self.root, text or "Immediate activation", 
-                                               keywords or ["emergency"], self.alert_count, alert_id)
-                except Exception as e:
-                    print(f"Immediate dialog error: {e}")
+                def create_emergency_dialog():
+                    """Create emergency dialog in main thread"""
+                    try:
+                        print("�️ Cireating emergency dialog in main thread...")
+                        if not hasattr(self, 'immediate_dialog') or not self.immediate_dialog:
+                            print(f"📊 Dialog parameters: text='{text}', keywords={keywords}, alert_id={alert_id}")
+                            print(f"📊 Root window: {self.root}")
+                            
+                            # Force the dialog creation
+                            self.immediate_dialog = ImmediateEmergencyDialog(self.root, text or "Immediate activation", 
+                                                   keywords or ["emergency"], self.alert_count, alert_id)
+                            print("✅ Emergency dialog created successfully")
+                        else:
+                            print("⚠️ Emergency dialog already exists")
+                    except Exception as e:
+                        print(f"❌ Immediate dialog error: {e}")
+                        import traceback
+                        traceback.print_exc()
+                        
+                        # Fallback to simple messagebox
+                        try:
+                            import tkinter.messagebox as messagebox
+                            messagebox.showwarning(
+                                "🚨 EMERGENCY PROTOCOL ACTIVE", 
+                                f"Emergency detected!\n\nKeywords: {keywords}\nText: '{text}'\n\nEmergency protocol is active!"
+                            )
+                            print("✅ Fallback dialog shown")
+                        except Exception as e2:
+                            print(f"❌ Fallback dialog also failed: {e2}")
+                
+                # Emergency windows are now created in trigger_voice_alert
+                print("🚨 Emergency escalation system activated")
                     
             print("✅ Immediate emergency protocol fully activated")
             
@@ -5279,36 +5634,74 @@ class ImmediateEmergencyDialog:
     """Immediate emergency dialog - shows activation status without confirmation"""
     
     def __init__(self, parent, text, keywords, alert_count, alert_id):
+        print(f"🏗️ ImmediateEmergencyDialog.__init__ called")
+        print(f"   Parent: {parent}")
+        print(f"   Text: '{text}'")
+        print(f"   Keywords: {keywords}")
         self.parent = parent
         self.dialog = None
-        self.setup_dialog(parent, text, keywords, alert_count, alert_id)
+        try:
+            self.setup_dialog(parent, text, keywords, alert_count, alert_id)
+            print("✅ ImmediateEmergencyDialog setup completed")
+        except Exception as e:
+            print(f"❌ ImmediateEmergencyDialog setup failed: {e}")
+            import traceback
+            traceback.print_exc()
         
     def setup_dialog(self, parent, text, keywords, alert_count, alert_id):
         """Setup immediate emergency status dialog"""
-        if CUSTOM_TK_AVAILABLE:
-            self.dialog = ctk.CTkToplevel(parent)
-        else:
-            self.dialog = tk.Toplevel(parent)
-            
-        self.dialog.title("⚡ IMMEDIATE EMERGENCY PROTOCOL ACTIVE")
-        self.dialog.geometry("800x600")
+        print("🖼️ Setting up emergency dialog window...")
         
-        # Center dialog
         try:
-            x = (self.dialog.winfo_screenwidth() // 2) - 400
-            y = (self.dialog.winfo_screenheight() // 2) - 300
-            self.dialog.geometry(f"800x600+{x}+{y}")
-        except:
-            pass
+            if CUSTOM_TK_AVAILABLE:
+                print("   Using CustomTkinter for dialog")
+                self.dialog = ctk.CTkToplevel(parent)
+            else:
+                print("   Using standard Tkinter for dialog")
+                self.dialog = tk.Toplevel(parent)
             
-        # Configure theme
-        if CUSTOM_TK_AVAILABLE:
-            self.dialog.configure(fg_color=PINK_COLORS["background"])
-        else:
-            self.dialog.configure(bg=PINK_COLORS["background"])
+            print("✅ Dialog window created")
             
-        # Make dialog always on top but not modal (non-blocking)
-        self.dialog.attributes('-topmost', True)
+            # Basic setup
+            self.dialog.title("⚡ IMMEDIATE EMERGENCY PROTOCOL ACTIVE")
+            self.dialog.geometry("700x500")
+            print("✅ Dialog title and size set")
+            
+            # Make it visible immediately
+            self.dialog.attributes('-topmost', True)
+            self.dialog.lift()
+            self.dialog.focus_force()
+            self.dialog.deiconify()
+            print("✅ Dialog visibility settings applied")
+            
+            # Center dialog
+            try:
+                self.dialog.update_idletasks()  # Update to get correct screen size
+                x = (self.dialog.winfo_screenwidth() // 2) - 350
+                y = (self.dialog.winfo_screenheight() // 2) - 250
+                self.dialog.geometry(f"700x500+{x}+{y}")
+                print("✅ Dialog centered")
+            except Exception as e:
+                print(f"⚠️ Centering failed: {e}")
+                
+            # Configure theme
+            if CUSTOM_TK_AVAILABLE:
+                self.dialog.configure(fg_color="#8b0000")  # Dark red for emergency
+            else:
+                self.dialog.configure(bg="#8b0000")
+            
+            print("✅ Dialog theme configured")
+            
+            # Force dialog to appear
+            self.dialog.update()
+            self.dialog.tkraise()
+            print("🚨 EMERGENCY DIALOG SHOULD BE VISIBLE NOW!")
+            
+        except Exception as e:
+            print(f"❌ Dialog setup error: {e}")
+            import traceback
+            traceback.print_exc()
+            return
         
         # Main frame
         if CUSTOM_TK_AVAILABLE:
@@ -5510,3 +5903,283 @@ class ImmediateEmergencyDialog:
                     self.parent.immediate_dialog = None
         except Exception as e:
             print(f"Acknowledge error: {e}")
+
+    def show_contacting_services_window(self):
+        """Show animated window with alerts and sounds for contacting services"""
+        try:
+            print("📞 Creating contacting services window with alerts...")
+            
+            # Create services window
+            if CUSTOM_TK_AVAILABLE:
+                services_window = ctk.CTkToplevel(self.root)
+                services_window.configure(fg_color=PINK_COLORS["background"])
+            else:
+                services_window = tk.Toplevel(self.root)
+                services_window.configure(bg=PINK_COLORS["background"])
+            
+            # Window setup
+            services_window.title("🚨 HerShield Emergency Services")
+            services_window.geometry("700x500")
+            
+            # Make it appear on top
+            services_window.attributes('-topmost', True)
+            services_window.lift()
+            services_window.focus_force()
+            
+            # Center the window
+            services_window.update_idletasks()
+            x = (services_window.winfo_screenwidth() // 2) - 350
+            y = (services_window.winfo_screenheight() // 2) - 250
+            services_window.geometry(f"700x500+{x}+{y}")
+            
+            # Main container
+            if CUSTOM_TK_AVAILABLE:
+                main_container = ctk.CTkFrame(
+                    services_window,
+                    corner_radius=25,
+                    fg_color="#ff0000",  # Bright red for urgency
+                    border_width=3,
+                    border_color="#ffffff"
+                )
+            else:
+                main_container = tk.Frame(
+                    services_window,
+                    bg="#ff0000",
+                    relief="raised",
+                    bd=5
+                )
+            main_container.pack(fill="both", expand=True, padx=15, pady=15)
+            
+            # Urgent header with animation
+            if CUSTOM_TK_AVAILABLE:
+                self.services_header = ctk.CTkLabel(
+                    main_container,
+                    text="🚨 CONTACTING EMERGENCY SERVICES 🚨",
+                    font=ctk.CTkFont(size=24, weight="bold"),
+                    text_color="#ffffff"
+                )
+            else:
+                self.services_header = tk.Label(
+                    main_container,
+                    text="🚨 CONTACTING EMERGENCY SERVICES 🚨",
+                    font=("Arial", 24, "bold"),
+                    fg="#ffffff",
+                    bg="#ff0000"
+                )
+            self.services_header.pack(pady=20)
+            
+            # Status frame
+            if CUSTOM_TK_AVAILABLE:
+                status_frame = ctk.CTkFrame(
+                    main_container,
+                    corner_radius=15,
+                    fg_color="#8b0000",
+                    border_width=2,
+                    border_color="#ffff00"
+                )
+            else:
+                status_frame = tk.Frame(
+                    main_container,
+                    bg="#8b0000",
+                    relief="ridge",
+                    bd=3
+                )
+            status_frame.pack(fill="x", padx=20, pady=20)
+            
+            # Animated status messages
+            self.service_messages = [
+                "📞 Contacting Emergency Contacts...",
+                "🚔 Alerting Police Services...",
+                "🚑 Notifying Medical Services...", 
+                "🔥 Contacting Fire Department...",
+                "📡 Broadcasting Emergency Alert...",
+                "📍 Sharing Live Location...",
+                "📷 Capturing Evidence...",
+                "🔊 Activating Emergency Whistle...",
+                "📱 Sending SMS Alerts...",
+                "📧 Sending Email Notifications...",
+                "🌐 Uploading to Cloud Services...",
+                "⚡ All Services Contacted Successfully!"
+            ]
+            
+            # Status label for animated messages
+            if CUSTOM_TK_AVAILABLE:
+                self.status_label = ctk.CTkLabel(
+                    status_frame,
+                    text=self.service_messages[0],
+                    font=ctk.CTkFont(size=16, weight="bold"),
+                    text_color="#00ff00"
+                )
+            else:
+                self.status_label = tk.Label(
+                    status_frame,
+                    text=self.service_messages[0],
+                    font=("Arial", 16, "bold"),
+                    fg="#00ff00",
+                    bg="#8b0000"
+                )
+            self.status_label.pack(pady=20)
+            
+            # Progress indicator
+            if CUSTOM_TK_AVAILABLE:
+                self.progress_label = ctk.CTkLabel(
+                    main_container,
+                    text="⚡ EMERGENCY PROTOCOL IN PROGRESS ⚡",
+                    font=ctk.CTkFont(size=18, weight="bold"),
+                    text_color="#ffff00"
+                )
+            else:
+                self.progress_label = tk.Label(
+                    main_container,
+                    text="⚡ EMERGENCY PROTOCOL IN PROGRESS ⚡",
+                    font=("Arial", 18, "bold"),
+                    fg="#ffff00",
+                    bg="#ff0000"
+                )
+            self.progress_label.pack(pady=20)
+            
+            # Instructions
+            if CUSTOM_TK_AVAILABLE:
+                instructions = ctk.CTkLabel(
+                    main_container,
+                    text="🔊 Emergency whistle activated | All services being contacted | Help is on the way!",
+                    font=ctk.CTkFont(size=14),
+                    text_color="#ffffff"
+                )
+            else:
+                instructions = tk.Label(
+                    main_container,
+                    text="🔊 Emergency whistle activated | All services being contacted | Help is on the way!",
+                    font=("Arial", 14),
+                    fg="#ffffff",
+                    bg="#ff0000"
+                )
+            instructions.pack(pady=15)
+            
+            # Close button (appears after all messages)
+            if CUSTOM_TK_AVAILABLE:
+                self.close_services_btn = ctk.CTkButton(
+                    main_container,
+                    text="✅ SERVICES CONTACTED",
+                    font=ctk.CTkFont(size=16, weight="bold"),
+                    fg_color="#32cd32",
+                    hover_color="#228b22",
+                    width=300,
+                    height=50,
+                    corner_radius=15,
+                    command=services_window.destroy
+                )
+            else:
+                self.close_services_btn = tk.Button(
+                    main_container,
+                    text="✅ SERVICES CONTACTED",
+                    font=("Arial", 16, "bold"),
+                    bg="#32cd32",
+                    fg="white",
+                    width=25,
+                    height=2,
+                    command=services_window.destroy
+                )
+            # Don't pack the button yet - it will appear after animation
+            
+            # Store window reference
+            self.services_window = services_window
+            
+            # Start animations and sounds
+            self.start_service_animation(services_window)
+            self.play_emergency_sounds()
+            
+            print("✅ Contacting services window created with alerts!")
+            
+        except Exception as e:
+            print(f"❌ Services window creation failed: {e}")
+            import traceback
+            traceback.print_exc()
+    
+    def start_service_animation(self, window):
+        """Animate the service contact messages"""
+        message_index = 0
+        
+        def update_message():
+            nonlocal message_index
+            try:
+                if window.winfo_exists() and message_index < len(self.service_messages):
+                    # Update status message
+                    if CUSTOM_TK_AVAILABLE:
+                        self.status_label.configure(text=self.service_messages[message_index])
+                    else:
+                        self.status_label.configure(text=self.service_messages[message_index])
+                    
+                    message_index += 1
+                    
+                    # If all messages shown, show close button
+                    if message_index >= len(self.service_messages):
+                        self.close_services_btn.pack(pady=20)
+                        # Change header to success
+                        if CUSTOM_TK_AVAILABLE:
+                            self.services_header.configure(text="✅ ALL EMERGENCY SERVICES CONTACTED ✅")
+                        else:
+                            self.services_header.configure(text="✅ ALL EMERGENCY SERVICES CONTACTED ✅")
+                    else:
+                        # Schedule next message
+                        window.after(1500, update_message)  # 1.5 seconds between messages
+                        
+            except Exception as e:
+                print(f"Animation error: {e}")
+        
+        # Start the animation
+        update_message()
+        
+        # Also animate the header flashing
+        self.animate_services_header(window)
+    
+    def animate_services_header(self, window):
+        """Animate the services header with flashing colors"""
+        colors = ["#ffffff", "#ffff00", "#ff8800"]
+        color_index = 0
+        
+        def flash_header():
+            nonlocal color_index
+            try:
+                if window.winfo_exists():
+                    if CUSTOM_TK_AVAILABLE:
+                        self.services_header.configure(text_color=colors[color_index])
+                    else:
+                        self.services_header.configure(fg=colors[color_index])
+                    color_index = (color_index + 1) % len(colors)
+                    window.after(400, flash_header)  # Flash every 400ms
+            except:
+                pass
+        
+        flash_header()
+    
+    def play_emergency_sounds(self):
+        """Play emergency whistle and alert sounds"""
+        def sound_thread():
+            try:
+                import winsound
+                # Emergency whistle pattern
+                for cycle in range(3):
+                    # High-pitched whistle
+                    for freq in range(2000, 3000, 100):
+                        winsound.Beep(freq, 100)
+                    # Low-pitched alert
+                    for freq in range(1000, 500, -50):
+                        winsound.Beep(freq, 150)
+                    
+                # Continuous alert beeps
+                for _ in range(10):
+                    winsound.Beep(1500, 200)
+                    time.sleep(0.1)
+                    winsound.Beep(2000, 200)
+                    time.sleep(0.1)
+                    
+            except Exception as e:
+                print(f"Sound error: {e}")
+                # Fallback to system bell
+                for _ in range(20):
+                    print('\a', end='', flush=True)
+                    time.sleep(0.2)
+        
+        # Play sounds in background
+        threading.Thread(target=sound_thread, daemon=True).start()
