@@ -518,6 +518,201 @@ class FuturisticHerShield:
             except Exception as e2:
                 print(f"❌ Even messagebox failed: {e2}")
     
+    def show_contacting_services_window(self):
+        """Show animated window with alerts and sounds for contacting services"""
+        try:
+            print("📞 Creating contacting services window with alerts...")
+            
+            # Create services window
+            if CUSTOM_TK_AVAILABLE:
+                services_window = ctk.CTkToplevel(self.root)
+                services_window.configure(fg_color=PINK_COLORS["background"])
+            else:
+                services_window = tk.Toplevel(self.root)
+                services_window.configure(bg=PINK_COLORS["background"])
+            
+            # Window setup
+            services_window.title("🚨 HerShield Emergency Services")
+            services_window.geometry("700x500")
+            
+            # Make it appear on top
+            services_window.attributes('-topmost', True)
+            services_window.lift()
+            services_window.focus_force()
+            
+            # Center the window
+            services_window.update_idletasks()
+            x = (services_window.winfo_screenwidth() // 2) - 350
+            y = (services_window.winfo_screenheight() // 2) - 250
+            services_window.geometry(f"700x500+{x}+{y}")
+            
+            # Main container
+            if CUSTOM_TK_AVAILABLE:
+                main_container = ctk.CTkFrame(
+                    services_window,
+                    corner_radius=25,
+                    fg_color="#ff0000",  # Bright red for urgency
+                    border_width=3,
+                    border_color="#ffffff"
+                )
+            else:
+                main_container = tk.Frame(
+                    services_window,
+                    bg="#ff0000",
+                    relief="raised",
+                    bd=5
+                )
+            main_container.pack(fill="both", expand=True, padx=15, pady=15)
+            
+            # Urgent header with animation
+            if CUSTOM_TK_AVAILABLE:
+                self.services_header = ctk.CTkLabel(
+                    main_container,
+                    text="🚨 CONTACTING EMERGENCY SERVICES 🚨",
+                    font=ctk.CTkFont(size=24, weight="bold"),
+                    text_color="#ffffff"
+                )
+            else:
+                self.services_header = tk.Label(
+                    main_container,
+                    text="🚨 CONTACTING EMERGENCY SERVICES 🚨",
+                    font=("Arial", 24, "bold"),
+                    fg="#ffffff",
+                    bg="#ff0000"
+                )
+            self.services_header.pack(pady=20)
+            
+            # Animated status messages
+            self.service_messages = [
+                "📞 Contacting Emergency Contacts...",
+                "🚔 Alerting Police Services...",
+                "🚑 Notifying Medical Services...", 
+                "🔥 Contacting Fire Department...",
+                "📡 Broadcasting Emergency Alert...",
+                "📍 Sharing Live Location...",
+                "📷 Capturing Evidence...",
+                "🔊 Activating Emergency Whistle...",
+                "📱 Sending SMS Alerts...",
+                "📧 Sending Email Notifications...",
+                "⚡ All Services Contacted Successfully!"
+            ]
+            
+            # Status label for animated messages
+            if CUSTOM_TK_AVAILABLE:
+                self.status_label = ctk.CTkLabel(
+                    main_container,
+                    text=self.service_messages[0],
+                    font=ctk.CTkFont(size=16, weight="bold"),
+                    text_color="#00ff00"
+                )
+            else:
+                self.status_label = tk.Label(
+                    main_container,
+                    text=self.service_messages[0],
+                    font=("Arial", 16, "bold"),
+                    fg="#00ff00",
+                    bg="#ff0000"
+                )
+            self.status_label.pack(pady=30)
+            
+            # Close button (appears after all messages)
+            if CUSTOM_TK_AVAILABLE:
+                self.close_services_btn = ctk.CTkButton(
+                    main_container,
+                    text="✅ SERVICES CONTACTED",
+                    font=ctk.CTkFont(size=16, weight="bold"),
+                    fg_color="#32cd32",
+                    hover_color="#228b22",
+                    width=300,
+                    height=50,
+                    corner_radius=15,
+                    command=services_window.destroy
+                )
+            else:
+                self.close_services_btn = tk.Button(
+                    main_container,
+                    text="✅ SERVICES CONTACTED",
+                    font=("Arial", 16, "bold"),
+                    bg="#32cd32",
+                    fg="white",
+                    width=25,
+                    height=2,
+                    command=services_window.destroy
+                )
+            
+            # Store window reference
+            self.services_window = services_window
+            
+            # Start animations and sounds
+            self.start_service_animation(services_window)
+            self.play_emergency_sounds()
+            
+            print("✅ Contacting services window created with alerts!")
+            
+        except Exception as e:
+            print(f"❌ Services window creation failed: {e}")
+            import traceback
+            traceback.print_exc()
+    
+    def start_service_animation(self, window):
+        """Animate the service contact messages"""
+        message_index = 0
+        
+        def update_message():
+            nonlocal message_index
+            try:
+                if window.winfo_exists() and message_index < len(self.service_messages):
+                    # Update status message
+                    self.status_label.configure(text=self.service_messages[message_index])
+                    
+                    message_index += 1
+                    
+                    # If all messages shown, show close button
+                    if message_index >= len(self.service_messages):
+                        self.close_services_btn.pack(pady=20)
+                        # Change header to success
+                        self.services_header.configure(text="✅ ALL EMERGENCY SERVICES CONTACTED ✅")
+                    else:
+                        # Schedule next message
+                        window.after(1500, update_message)  # 1.5 seconds between messages
+                        
+            except Exception as e:
+                print(f"Animation error: {e}")
+        
+        # Start the animation
+        update_message()
+    
+    def play_emergency_sounds(self):
+        """Play emergency whistle and alert sounds"""
+        def sound_thread():
+            try:
+                import winsound
+                # Emergency whistle pattern
+                for cycle in range(3):
+                    # High-pitched whistle
+                    for freq in range(2000, 3000, 100):
+                        winsound.Beep(freq, 100)
+                    # Low-pitched alert
+                    for freq in range(1000, 500, -50):
+                        winsound.Beep(freq, 150)
+                    
+                # Continuous alert beeps
+                for _ in range(10):
+                    winsound.Beep(1500, 200)
+                    time.sleep(0.1)
+                    winsound.Beep(2000, 200)
+                    time.sleep(0.1)
+                    
+            except Exception as e:
+                print(f"Sound error: {e}")
+                # Fallback to system bell
+                for _ in range(20):
+                    print('\a', end='', flush=True)
+                    time.sleep(0.2)
+        
+        # Play sounds in background
+        threading.Thread(target=sound_thread, daemon=True).start()
+    
     def start_emergency_pulse(self, window):
         """Start subtle pulsing animation for emergency window"""
         pulse_direction = 1
@@ -1400,7 +1595,8 @@ class FuturisticHerShield:
             self.create_simple_emergency_window(text, keywords, f"voice_alert_{int(time.time())}")
             print("✅ Futuristic emergency window should appear!")
             
-            # TODO: Add contacting services window after fixing method issue
+            # Show contacting services window after 2 seconds
+            self.root.after(2000, lambda: self.show_contacting_services_window())
             
             # Check for critical keywords that need immediate activation
             critical_keywords = ["help", "emergency", "danger", "police", "fire", "attack", "save me"]
