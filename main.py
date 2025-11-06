@@ -180,13 +180,22 @@ KEYWORDS = [
 
 class FuturisticHerShield:
     def __init__(self):
+        print("🚀 Initializing HerShield GUI...")
+        
         if CUSTOM_TK_AVAILABLE:
             self.root = ctk.CTk()
         else:
             self.root = tk.Tk()
+            
+        print("✅ Root window created")
+        
         self.setup_futuristic_window()
         self.setup_variables()
+        
+        print("🎨 Creating UI...")
         self.create_futuristic_ui()
+        
+        print("⚙️ Loading configuration...")
         self.load_config()
 
         # System state
@@ -194,21 +203,21 @@ class FuturisticHerShield:
         self.alert_count = 0
         self.monitoring_thread = None
 
-        # System state
-        self.listening = False
-        self.alert_count = 0
-        self.monitoring_thread = None
-
+        print("🔧 Setting up enhanced features...")
         # Enhanced system components
         if ENHANCED_FEATURES:
-            self.location_service = EnhancedLocationService()
-            acknowledgment_system.start_monitoring()
+            try:
+                self.location_service = EnhancedLocationService()
+                acknowledgment_system.start_monitoring()
+                print("✅ Enhanced features loaded")
+            except Exception as e:
+                print(f"⚠️ Enhanced features error: {e}")
 
         # Setup keyboard shortcuts
         self.setup_keyboard_shortcuts()
 
-        # Initialize easy-use features
-        self.setup_easy_use_features()
+        # Initialize easy-use features (in background to avoid blocking)
+        self.root.after(1000, self.setup_easy_use_features_async)
 
         # Initialize control flags
         self.location_tracking_active = True
@@ -219,7 +228,16 @@ class FuturisticHerShield:
         self.start_animations()
         
         # Cleanup old evidence files in background
-        self.cleanup_evidence_async()
+        self.root.after(2000, self.cleanup_evidence_async)
+        
+        print("✅ HerShield initialization complete!")
+        
+    def setup_easy_use_features_async(self):
+        """Setup easy-use features in background"""
+        try:
+            self.setup_easy_use_features()
+        except Exception as e:
+            print(f"Easy-use features error: {e}")
 
     def setup_futuristic_window(self):
         """Setup futuristic window with pink theme"""
@@ -461,7 +479,24 @@ class FuturisticHerShield:
             text_color="white",
             command=self.emergency_alert
         )
-        self.emergency_btn.pack(pady=20)
+        self.emergency_btn.pack(pady=10)
+        
+        # Immediate Emergency button - even more urgent
+        self.immediate_emergency_btn = ctk.CTkButton(
+            control_frame,
+            text="⚡ IMMEDIATE EMERGENCY - NO CONFIRMATION ⚡",
+            font=ctk.CTkFont(size=18, weight="bold"),
+            height=70,
+            width=450,
+            corner_radius=20,
+            fg_color="#8b0000",
+            hover_color="#660000",
+            border_width=3,
+            border_color="#ff0000",
+            text_color="white",
+            command=self.emergency_alert_immediate
+        )
+        self.immediate_emergency_btn.pack(pady=10)
 
         # Acknowledge button (prominent)
         self.acknowledge_btn = ctk.CTkButton(
@@ -720,6 +755,8 @@ class FuturisticHerShield:
 
     def start_protection(self):
         """Start protection with enhanced features"""
+        print("🛡️ Starting protection...")
+        
         self.listening = True
 
         # Update button appearance
@@ -732,26 +769,28 @@ class FuturisticHerShield:
         # Update status
         self.status_display.configure(
             text="⚡ INSTANT GUARDIAN ACTIVE - Ultra-Responsive Mode")
-        self.system_status.configure(text="🔊 Voice Detection: ULTRA-ACTIVE")
+        self.system_status.configure(text="🔊 Voice Detection: STARTING...")
 
         # Show smart notification
         self.show_smart_notification("Protection Started",
                                      "🛡️ Instant Guardian is now protecting you!\n\n" +
-                                     "• Voice monitoring: ACTIVE\n" +
+                                     "• Voice monitoring: STARTING\n" +
                                      "• Location tracking: LIVE\n" +
                                      "• Emergency contacts: READY\n" +
                                      "• Quick acknowledge: ESC key")
 
-        # Start monitoring thread
+        # Start monitoring thread (non-blocking)
         self.monitoring_thread = threading.Thread(
             target=self.voice_monitoring_loop, daemon=True)
         self.monitoring_thread.start()
+        
+        print("✅ Voice monitoring thread started")
 
-        # Auto-check system readiness
-        self.check_system_readiness()
+        # Auto-check system readiness (delayed)
+        self.root.after(1000, self.check_system_readiness)
 
-        # Update location
-        self.update_location()
+        # Update location (delayed)
+        self.root.after(500, self.update_location)
 
     def stop_protection(self):
         """Stop protection with smart feedback"""
@@ -876,144 +915,459 @@ class FuturisticHerShield:
             print(f"System readiness check error: {e}")
 
     def voice_monitoring_loop(self):
-        """Simplified voice monitoring for fast startup"""
+        """Reliable voice monitoring system that won't crash"""
         if not SPEECH_AVAILABLE:
             self.root.after(0, lambda: self.update_status("⚠️ Voice recognition not available"))
             return
             
         try:
+            # Use reliable voice detection system
+            from reliable_voice_detection import ReliableVoiceDetector
+            
+            print("�️ Satarting Reliable Voice Detection System...")
+            
+            # Create reliable detector with callback
+            def voice_alert_callback(alert_data):
+                """Callback for reliable voice detection alerts"""
+                try:
+                    text = alert_data['text']
+                    keywords = alert_data['keywords']
+                    detection_count = alert_data['detection_count']
+                    response_time = alert_data['recognition_time']
+                    
+                    print(f"🚨 Voice Alert #{detection_count}: {keywords} ({response_time:.2f}s)")
+                    
+                    # Update status in main thread
+                    self.root.after(0, lambda: self.update_status(
+                        f"🚨 VOICE EMERGENCY: {', '.join(keywords[:2])}"))
+                    
+                    # Stop listening immediately for safety
+                    self.listening = False
+                    
+                    # Trigger emergency response
+                    self.root.after(0, lambda: self.trigger_voice_alert(text, keywords))
+                        
+                except Exception as e:
+                    print(f"Voice alert callback error: {e}")
+            
+            # Initialize reliable detector
+            self.reliable_detector = ReliableVoiceDetector(callback_function=voice_alert_callback)
+            
+            # Start reliable monitoring
+            if self.reliable_detector.start_monitoring():
+                self.root.after(0, lambda: self.update_status("🎤 RELIABLE VOICE GUARDIAN: ACTIVE"))
+                print("✅ Reliable voice detection started successfully")
+                
+                # Keep monitoring while listening
+                while self.listening and self.reliable_detector.is_listening:
+                    time.sleep(0.5)  # Check every 500ms
+                    
+                # Stop detector when done
+                self.reliable_detector.stop_monitoring()
+            else:
+                # Fallback to basic monitoring
+                print("⚠️ Reliable detection failed, using basic fallback")
+                self._basic_voice_monitoring()
+                
+        except ImportError as e:
+            print(f"⚠️ Reliable voice detection not available: {e}")
+            self._basic_voice_monitoring()
+        except Exception as e:
+            print(f"Reliable voice monitoring failed: {e}")
+            self._basic_voice_monitoring()
+    
+    def _basic_voice_monitoring(self):
+        """Improved fallback voice monitoring with working settings"""
+        try:
             import speech_recognition as sr
             r = sr.Recognizer()
+            
+            # Use settings that actually work (from testing)
+            r.energy_threshold = 150
+            r.dynamic_energy_threshold = True
+            r.pause_threshold = 0.8  # Longer pause for better detection
+            r.phrase_threshold = 0.3
+            r.non_speaking_duration = 0.8
+            
+            # Use default microphone
             mic = sr.Microphone()
 
-            # Improved microphone setup for better accuracy
+            print("🔧 Calibrating microphone with working settings...")
             with mic as source:
-                r.adjust_for_ambient_noise(source, duration=1.0)  # Better calibration
-                r.energy_threshold = 300  # Balanced threshold
-                r.dynamic_energy_threshold = True
-                r.pause_threshold = 0.8  # Better phrase detection
-                r.phrase_threshold = 0.3  # More reliable phrase start
-                r.non_speaking_duration = 0.5  # Better silence detection
+                r.adjust_for_ambient_noise(source, duration=1)
+                
+            print(f"✅ Microphone calibrated. Energy threshold: {r.energy_threshold}")
 
             self.root.after(0, lambda: self.update_status(
-                "🎤 QUANTUM VOICE GUARDIAN: ULTRA-ACTIVE"))
+                "🎤 RELIABLE VOICE GUARDIAN: ACTIVE"))
 
-            # Comprehensive keyword list for better detection
+            # Emergency keywords that work well
             keywords = [
-                # Basic emergency words
                 "help", "emergency", "danger", "police", "fire", "ambulance",
-                # Common phrases
-                "help me", "save me", "call police", "call 911", "call 100", 
-                "i'm in danger", "someone help", "need help", "please help",
-                # Threat situations
-                "attack", "stop", "get away", "leave me alone", "stop it", 
-                "no means no", "don't touch me", "let me go",
-                # Domestic violence indicators
-                "he's hurting me", "she's hurting me", "abuse", "violence",
-                "threatening me", "won't let me go", "being held",
-                # Medical emergencies
-                "can't breathe", "chest pain", "heart attack", "stroke",
-                # Simple words that might be easier to say under stress
-                "sos", "mayday", "urgent", "crisis"
+                "save me", "call police", "need help", "attack", "stop it",
+                "sos", "urgent", "crisis"
             ]
+            
+            print(f"🎯 Monitoring for emergency keywords: {keywords}")
 
+            # Reliable voice monitoring loop
+            detections = 0
             while self.listening:
                 try:
                     with mic as source:
-                        # Better audio capture for accuracy
-                        audio = r.listen(source, timeout=1, phrase_time_limit=4)
+                        print("🎧 Listening for emergency keywords...")
+                        # Use longer timeouts for reliable detection
+                        audio = r.listen(source, timeout=2, phrase_time_limit=5)
 
-                    # Process with better error handling
-                    self.process_audio_accurate(audio, keywords)
+                    print("🔄 Processing audio...")
+                    
+                    # Use Google recognition (proven to work)
+                    try:
+                        start_time = time.time()
+                        text = r.recognize_google(audio, language='en-US').lower()
+                        recognition_time = time.time() - start_time
+                        
+                        print(f"🔊 Recognized ({recognition_time:.2f}s): '{text}'")
+                        
+                        # Check for emergency keywords
+                        found_keywords = []
+                        for keyword in keywords:
+                            if keyword in text:
+                                found_keywords.append(keyword)
+                        
+                        if found_keywords:
+                            detections += 1
+                            print(f"🚨 EMERGENCY KEYWORDS DETECTED: {found_keywords}")
+                            
+                            # Update status
+                            self.root.after(0, lambda: self.update_status(
+                                f"🚨 EMERGENCY DETECTED: {', '.join(found_keywords[:2])}"))
+                            
+                            # Trigger emergency response
+                            self.root.after(0, lambda: self.trigger_voice_alert(text, found_keywords))
+                            
+                            # Stop listening after detection for safety
+                            self.listening = False
+                            break
+                        else:
+                            print("   No emergency keywords detected")
+                            
+                    except sr.UnknownValueError:
+                        print("❓ Could not understand audio - continuing to listen")
+                    except sr.RequestError as e:
+                        print(f"❌ Recognition error: {e}")
+                        time.sleep(1)  # Wait before retrying
 
                 except sr.WaitTimeoutError:
-                    pass
-                except sr.UnknownValueError:
-                    pass
+                    print("⏰ No speech detected - continuing to monitor")
                 except Exception as e:
-                    self.root.after(0, lambda: self.update_status(f"⚠️ Voice: {str(e)[:20]}"))
-                    time.sleep(1)
+                    print(f"⚠️ Audio error: {e}")
+                    time.sleep(0.5)
+
+            print(f"🛑 Voice monitoring stopped. Total detections: {detections}")
 
         except Exception as e:
-            self.root.after(0, lambda: messagebox.showerror(
-                "Voice Error", f"Voice monitoring failed: {e}"))
+            print(f"Reliable voice monitoring failed: {e}")
+            self.root.after(0, lambda: self.update_status("⚠️ Voice monitoring unavailable"))
 
     def trigger_voice_alert(self, text, keywords):
         """Trigger alert when voice keywords are detected"""
         try:
             self.update_status(f"🚨 QUANTUM VOICE EMERGENCY: {', '.join(keywords)}")
             
-            # Show futuristic alert dialog
-            response = self.show_futuristic_voice_alert(text, keywords)
+            # Check for critical keywords that need immediate activation
+            critical_keywords = ["help", "emergency", "danger", "police", "fire", "attack", "save me"]
+            immediate_activation = any(kw in keywords for kw in critical_keywords)
             
-            if response:
-                self.emergency_alert()
+            if immediate_activation:
+                print(f"🚨 CRITICAL KEYWORDS DETECTED: {keywords}")
+                print("⚡ ACTIVATING IMMEDIATE EMERGENCY PROTOCOL")
+                # Immediate activation without dialog
+                self.emergency_alert_immediate(text, keywords)
             else:
-                self.update_status("✅ Voice alert acknowledged - Continuing monitoring")
+                # Show dialog for less critical situations
+                response = self.show_futuristic_voice_alert(text, keywords)
+                if response:
+                    self.emergency_alert()
+                else:
+                    self.update_status("✅ Voice alert acknowledged - Continuing monitoring")
                 
         except Exception as e:
             print(f"Voice alert error: {e}")
             
-    def process_audio_accurate(self, audio, keywords):
-        """Accurate audio processing with better recognition"""
+    def emergency_alert_immediate(self, text=None, keywords=None):
+        """Immediate emergency alert activation without confirmation"""
+        try:
+            print("⚡ IMMEDIATE EMERGENCY PROTOCOL ACTIVATED")
+            self.update_status("🚨 IMMEDIATE EMERGENCY PROTOCOL ACTIVE")
+            
+            self.alert_count += 1
+            self.alert_count_text = str(self.alert_count)
+            self.alert_display.configure(
+                text=f"🚨 Alerts Today: {self.alert_count_text}")
+
+            if ENHANCED_FEATURES:
+                # Enhanced immediate emergency with escalation
+                alert_id = f"immediate_emergency_{int(time.time())}_{uuid.uuid4().hex[:8]}"
+
+                # Get location and evidence immediately
+                location_data = self.location_service.get_emergency_location_info(
+                ) if hasattr(self, 'location_service') else None
+                evidence_data = capture_emergency_evidence()
+
+                # Create urgent alert message
+                if text and keywords:
+                    alert_message = f"🚨 IMMEDIATE VOICE EMERGENCY\n\nCritical keywords detected: {', '.join(keywords)}\nVoice: \"{text}\"\n\nAUTOMATIC PROTOCOL ACTIVATION\nImmediate assistance required!\n\nLocation: {self._format_location_brief(location_data)}\nTime: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
+                else:
+                    alert_message = f"🚨 IMMEDIATE MANUAL EMERGENCY\n\nUser activated immediate emergency protocol.\nNo confirmation required - CRITICAL SITUATION\n\nLocation: {self._format_location_brief(location_data)}\nTime: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
+
+                # Start immediate escalation
+                escalation_system.start_escalation(
+                    alert_id=alert_id,
+                    alert_type='immediate_emergency',
+                    message=alert_message,
+                    location_data=location_data,
+                    evidence_data=evidence_data
+                )
+
+                # Show immediate alert dialog (non-blocking) - prevent duplicates
+                try:
+                    if not hasattr(self, 'immediate_dialog') or not self.immediate_dialog:
+                        self.immediate_dialog = ImmediateEmergencyDialog(self.root, text or "Immediate activation", 
+                                               keywords or ["emergency"], self.alert_count, alert_id)
+                except Exception as e:
+                    print(f"Immediate dialog error: {e}")
+                    
+            print("✅ Immediate emergency protocol fully activated")
+            
+        except Exception as e:
+            print(f"Immediate emergency error: {e}")
+            
+    def process_audio_ultra_fast(self, audio, keywords):
+        """Ultra-fast audio processing optimized for speed"""
         try:
             import speech_recognition as sr
             r = sr.Recognizer()
             
-            # Try multiple recognition methods for better accuracy
+            # Single fast recognition attempt
             text = None
+            start_time = time.time()
             
-            # Method 1: Google with Indian English
             try:
+                # Use fastest Google recognition with short timeout
                 text = r.recognize_google(audio, language='en-IN').lower()
-                print(f"🔊 Google (en-IN): '{text}'")
-            except:
-                pass
-            
-            # Method 2: Google with US English as fallback
-            if not text:
-                try:
-                    text = r.recognize_google(audio, language='en-US').lower()
-                    print(f"🔊 Google (en-US): '{text}'")
-                except:
-                    pass
-            
-            # Method 3: Google with no language specified
-            if not text:
-                try:
-                    text = r.recognize_google(audio).lower()
-                    print(f"🔊 Google (auto): '{text}'")
-                except:
-                    pass
+                recognition_time = time.time() - start_time
+                print(f"🔊 Recognized in {recognition_time:.2f}s: '{text}'")
+            except sr.UnknownValueError:
+                print("🔇 No speech detected")
+                return
+            except sr.RequestError as e:
+                print(f"🌐 Recognition error: {e}")
+                return
+            except Exception as e:
+                print(f"🔧 Recognition failed: {e}")
+                return
             
             if text:
-                # Comprehensive keyword matching
+                # Ultra-fast keyword matching
                 found_keywords = []
+                
+                # Direct string matching (fastest)
                 for keyword in keywords:
                     if keyword in text:
                         found_keywords.append(keyword)
                 
-                # Also check for partial matches
-                text_words = text.split()
-                for word in text_words:
-                    for keyword in keywords:
-                        if word in keyword or keyword in word:
-                            if keyword not in found_keywords:
-                                found_keywords.append(keyword)
-                
                 if found_keywords:
-                    print(f"🚨 Keywords found: {found_keywords}")
-                    # Stop listening and show dialog
+                    print(f"🚨 KEYWORDS DETECTED: {found_keywords}")
+                    # Stop listening immediately
                     self.listening = False
-                    # Use root.after to ensure UI thread safety
-                    self.root.after(0, lambda: self.trigger_voice_alert(text, found_keywords))
+                    # Immediate trigger
+                    self.trigger_voice_alert(text, found_keywords)
+                else:
+                    print(f"ℹ️ No keywords in: '{text}'")
                 
-        except sr.UnknownValueError:
-            print("🔇 No speech detected")
-        except sr.RequestError as e:
-            print(f"🌐 Recognition service error: {e}")
         except Exception as e:
-            print(f"🔧 Audio processing error: {e}")
+            print(f"🔧 Ultra-fast processing error: {e}")
+            
+    def try_offline_voice_detection(self):
+        """Backup offline voice detection using simpler methods"""
+        try:
+            print("🔄 Trying offline voice detection...")
+            import speech_recognition as sr
+            r = sr.Recognizer()
+            mic = sr.Microphone()
+            
+            # Simple offline detection
+            with mic as source:
+                r.adjust_for_ambient_noise(source, duration=0.3)
+                
+            keywords = ["help", "emergency", "danger", "police", "fire"]
+            
+            while self.listening:
+                try:
+                    with mic as source:
+                        audio = r.listen(source, timeout=0.3, phrase_time_limit=1.5)
+                    
+                    # Try offline recognition (Sphinx)
+                    try:
+                        text = r.recognize_sphinx(audio).lower()
+                        print(f"🔊 Offline: '{text}'")
+                        
+                        found_keywords = [kw for kw in keywords if kw in text]
+                        if found_keywords:
+                            print(f"🚨 Offline keywords: {found_keywords}")
+                            self.listening = False
+                            self.trigger_voice_alert(text, found_keywords)
+                            break
+                            
+                    except sr.UnknownValueError:
+                        pass
+                    except sr.RequestError:
+                        pass
+                        
+                except sr.WaitTimeoutError:
+                    continue
+                except Exception as e:
+                    print(f"Offline detection error: {e}")
+                    break
+                    
+        except Exception as e:
+            print(f"Offline voice detection failed: {e}")
+            self.root.after(0, lambda: self.update_status("⚠️ Voice detection unavailable"))
+            
+    def start_real_time_monitoring(self, keywords):
+        """Real-time continuous audio monitoring for instant detection"""
+        try:
+            import pyaudio
+            import numpy as np
+            import threading
+            import queue
+            
+            print("🚀 Starting REAL-TIME continuous monitoring...")
+            
+            # Audio settings optimized for real-time
+            CHUNK = 512  # Smaller chunks for faster processing
+            FORMAT = pyaudio.paInt16
+            CHANNELS = 1
+            RATE = 16000
+            
+            # Initialize PyAudio
+            p = pyaudio.PyAudio()
+            
+            # Audio queue for processing
+            audio_queue = queue.Queue()
+            
+            # Open audio stream
+            stream = p.open(
+                format=FORMAT,
+                channels=CHANNELS,
+                rate=RATE,
+                input=True,
+                frames_per_buffer=CHUNK,
+                stream_callback=lambda data, frame_count, time_info, status: (data, pyaudio.paContinue)
+            )
+            
+            stream.start_stream()
+            print("✅ Real-time audio stream started")
+            self.root.after(0, lambda: self.update_status("🎤 REAL-TIME GUARDIAN: LISTENING"))
+            
+            # Audio processing buffer
+            audio_buffer = []
+            buffer_duration = 1.5  # 1.5 seconds of audio
+            buffer_size = int(RATE * buffer_duration)
+            
+            # Start speech recognition thread
+            recognition_thread = threading.Thread(
+                target=self.continuous_speech_recognition,
+                args=(audio_queue, keywords),
+                daemon=True
+            )
+            recognition_thread.start()
+            
+            while self.listening:
+                try:
+                    # Read audio data
+                    data = stream.read(CHUNK, exception_on_overflow=False)
+                    audio_data = np.frombuffer(data, dtype=np.int16)
+                    
+                    # Add to buffer
+                    audio_buffer.extend(audio_data)
+                    
+                    # Keep buffer at optimal size
+                    if len(audio_buffer) > buffer_size:
+                        audio_buffer = audio_buffer[-buffer_size:]
+                    
+                    # Check for voice activity (energy-based detection)
+                    energy = np.sqrt(np.mean(audio_data**2))
+                    
+                    if energy > 300:  # Voice detected
+                        # Send audio for recognition
+                        if len(audio_buffer) >= RATE:  # At least 1 second
+                            try:
+                                audio_queue.put_nowait(audio_buffer.copy())
+                            except queue.Full:
+                                pass  # Skip if queue is full
+                        
+                except Exception as e:
+                    print(f"Audio stream error: {e}")
+                    continue
+            
+            # Cleanup
+            stream.stop_stream()
+            stream.close()
+            p.terminate()
+            print("🛑 Real-time monitoring stopped")
+            
+        except Exception as e:
+            print(f"Real-time monitoring failed: {e}")
+            raise  # Let fallback handle it
+            
+    def continuous_speech_recognition(self, audio_queue, keywords):
+        """Continuous speech recognition in background thread"""
+        import speech_recognition as sr
+        
+        r = sr.Recognizer()
+        
+        while self.listening:
+            try:
+                # Get audio from queue (non-blocking)
+                try:
+                    audio_buffer = audio_queue.get_nowait()
+                except queue.Empty:
+                    time.sleep(0.1)
+                    continue
+                
+                # Convert to AudioData
+                audio_bytes = np.array(audio_buffer, dtype=np.int16).tobytes()
+                audio = sr.AudioData(audio_bytes, 16000, 2)
+                
+                # Quick recognition
+                try:
+                    start_time = time.time()
+                    text = r.recognize_google(audio, language='en-IN').lower()
+                    recognition_time = time.time() - start_time
+                    
+                    print(f"🔊 [{recognition_time:.1f}s] '{text}'")
+                    
+                    # Check for keywords
+                    found_keywords = [kw for kw in keywords if kw in text]
+                    if found_keywords:
+                        print(f"🚨 INSTANT DETECTION: {found_keywords}")
+                        self.listening = False
+                        # Trigger in main thread
+                        self.root.after(0, lambda: self.trigger_voice_alert(text, found_keywords))
+                        break
+                        
+                except sr.UnknownValueError:
+                    pass  # No speech
+                except sr.RequestError as e:
+                    print(f"API error: {e}")
+                except Exception as e:
+                    print(f"Recognition error: {e}")
+                    
+            except Exception as e:
+                print(f"Continuous recognition error: {e}")
+                time.sleep(0.1)
             
     def setup_enhanced_audio_analysis(self):
         """Placeholder for audio analysis setup"""
@@ -1941,8 +2295,10 @@ Lat: {loc.get('latitude', 0):.6f}, Lon: {loc.get('longitude', 0):.6f}
             f"🚨 THREAT DETECTED - Alert #{self.alert_count} - ESCALATION ACTIVE")
 
     def emergency_alert(self):
-        """Enhanced manual emergency alert with escalation"""
-        result = self.show_futuristic_emergency_protocol_dialog()
+        """Enhanced manual emergency alert with immediate escalation"""
+        # IMMEDIATE ACTIVATION - No confirmation dialog needed
+        print("🚨 IMMEDIATE EMERGENCY PROTOCOL ACTIVATED")
+        result = True  # Always activate immediately
         if result:
             self.alert_count += 1
             self.alert_count_text = str(self.alert_count)
@@ -3498,15 +3854,31 @@ class InstantThreatDialog:
         threading.Thread(target=sound_thread, daemon=True).start()
 
     def start_flashing_animation(self):
-        """Start flashing animation for maximum attention"""
-        def flash():
+        """Start subtle attention animation without harsh flashing"""
+        self.flash_state = 0
+        
+        def gentle_flash():
             if hasattr(self, 'title_label'):
-                current_color = self.title_label.cget("text_color")
-                new_color = "yellow" if current_color == "white" else "white"
-                self.title_label.configure(text_color=new_color)
-                self.dialog.after(500, flash)
+                self.flash_state = (self.flash_state + 1) % 40
+                
+                # Smooth color transition instead of harsh flashing
+                if self.flash_state < 20:
+                    intensity = self.flash_state / 20.0
+                    # Interpolate between white and yellow
+                    red = int(255)
+                    green = int(255)
+                    blue = int(255 - (intensity * 100))  # Gradually reduce blue for yellow tint
+                else:
+                    intensity = (40 - self.flash_state) / 20.0
+                    red = int(255)
+                    green = int(255)
+                    blue = int(255 - (intensity * 100))
+                
+                color = f"#{red:02x}{green:02x}{blue:02x}"
+                self.title_label.configure(text_color=color)
+                self.dialog.after(150, gentle_flash)  # Faster, smoother updates
 
-        flash()
+        gentle_flash()
 
 
 class InstantVoiceAlertDialog:
@@ -4902,3 +5274,239 @@ class FuturisticCallDialog:
         self.result = False
         if self.dialog:
             self.dialog.destroy()
+
+class ImmediateEmergencyDialog:
+    """Immediate emergency dialog - shows activation status without confirmation"""
+    
+    def __init__(self, parent, text, keywords, alert_count, alert_id):
+        self.parent = parent
+        self.dialog = None
+        self.setup_dialog(parent, text, keywords, alert_count, alert_id)
+        
+    def setup_dialog(self, parent, text, keywords, alert_count, alert_id):
+        """Setup immediate emergency status dialog"""
+        if CUSTOM_TK_AVAILABLE:
+            self.dialog = ctk.CTkToplevel(parent)
+        else:
+            self.dialog = tk.Toplevel(parent)
+            
+        self.dialog.title("⚡ IMMEDIATE EMERGENCY PROTOCOL ACTIVE")
+        self.dialog.geometry("800x600")
+        
+        # Center dialog
+        try:
+            x = (self.dialog.winfo_screenwidth() // 2) - 400
+            y = (self.dialog.winfo_screenheight() // 2) - 300
+            self.dialog.geometry(f"800x600+{x}+{y}")
+        except:
+            pass
+            
+        # Configure theme
+        if CUSTOM_TK_AVAILABLE:
+            self.dialog.configure(fg_color=PINK_COLORS["background"])
+        else:
+            self.dialog.configure(bg=PINK_COLORS["background"])
+            
+        # Make dialog always on top but not modal (non-blocking)
+        self.dialog.attributes('-topmost', True)
+        
+        # Main frame
+        if CUSTOM_TK_AVAILABLE:
+            main_frame = ctk.CTkFrame(self.dialog, fg_color="#8b0000", corner_radius=20)
+        else:
+            main_frame = tk.Frame(self.dialog, bg="#8b0000", relief="raised", bd=5)
+        main_frame.pack(fill="both", expand=True, padx=20, pady=20)
+        
+        # Urgent header
+        if CUSTOM_TK_AVAILABLE:
+            header = ctk.CTkLabel(
+                main_frame,
+                text="⚡ IMMEDIATE EMERGENCY PROTOCOL ACTIVE ⚡",
+                font=ctk.CTkFont(size=28, weight="bold"),
+                text_color="#ffffff"
+            )
+        else:
+            header = tk.Label(
+                main_frame,
+                text="⚡ IMMEDIATE EMERGENCY PROTOCOL ACTIVE ⚡",
+                font=("Orbitron", 28, "bold"),
+                fg="#ffffff",
+                bg="#8b0000"
+            )
+        header.pack(pady=20)
+        
+        # Status indicator
+        if CUSTOM_TK_AVAILABLE:
+            status_frame = ctk.CTkFrame(main_frame, fg_color="#ff0000", corner_radius=15)
+        else:
+            status_frame = tk.Frame(main_frame, bg="#ff0000", relief="ridge", bd=3)
+        status_frame.pack(fill="x", padx=40, pady=20)
+        
+        if CUSTOM_TK_AVAILABLE:
+            status_label = ctk.CTkLabel(
+                status_frame,
+                text="🚨 ESCALATION SYSTEM ACTIVATED - NO CONFIRMATION REQUIRED 🚨",
+                font=ctk.CTkFont(size=18, weight="bold"),
+                text_color="white"
+            )
+        else:
+            status_label = tk.Label(
+                status_frame,
+                text="🚨 ESCALATION SYSTEM ACTIVATED - NO CONFIRMATION REQUIRED 🚨",
+                font=("Orbitron", 18, "bold"),
+                fg="white",
+                bg="#ff0000"
+            )
+        status_label.pack(pady=15)
+        
+        # Detection details
+        if CUSTOM_TK_AVAILABLE:
+            details_frame = ctk.CTkFrame(main_frame, fg_color=PINK_COLORS["dark"], corner_radius=15)
+        else:
+            details_frame = tk.Frame(main_frame, bg=PINK_COLORS["dark"], relief="sunken", bd=3)
+        details_frame.pack(fill="x", padx=40, pady=20)
+        
+        # Alert info
+        alert_info = f"🆔 Alert ID: {alert_id}\n🎤 Trigger: {text}\n🔍 Keywords: {', '.join(keywords)}\n⏰ Time: {datetime.now().strftime('%H:%M:%S')}"
+        
+        if CUSTOM_TK_AVAILABLE:
+            info_label = ctk.CTkLabel(
+                details_frame,
+                text=alert_info,
+                font=ctk.CTkFont(size=14, weight="bold"),
+                text_color="#00ffff",
+                justify="left"
+            )
+        else:
+            info_label = tk.Label(
+                details_frame,
+                text=alert_info,
+                font=("Orbitron", 14, "bold"),
+                fg="#00ffff",
+                bg=PINK_COLORS["dark"],
+                justify="left"
+            )
+        info_label.pack(pady=15)
+        
+        # Active protocols
+        protocols_text = """⚡ ACTIVE PROTOCOLS:
+
+🔥 Progressive escalation started
+📡 Emergency alerts being sent
+📷 Evidence capture in progress
+📍 Location sharing active
+📞 Emergency services notified
+🤖 AI monitoring enhanced
+🛡️ Full protection mode"""
+
+        if CUSTOM_TK_AVAILABLE:
+            protocols_label = ctk.CTkLabel(
+                main_frame,
+                text=protocols_text,
+                font=ctk.CTkFont(size=14),
+                text_color="#ffff00",
+                justify="left"
+            )
+        else:
+            protocols_label = tk.Label(
+                main_frame,
+                text=protocols_text,
+                font=("Orbitron", 14),
+                fg="#ffff00",
+                bg="#8b0000",
+                justify="left"
+            )
+        protocols_label.pack(pady=20)
+        
+        # Acknowledge button (only way to close)
+        if CUSTOM_TK_AVAILABLE:
+            ack_button = ctk.CTkButton(
+                main_frame,
+                text="✅ ACKNOWLEDGE EMERGENCY PROTOCOL",
+                font=ctk.CTkFont(size=16, weight="bold"),
+                fg_color="#32cd32",
+                hover_color="#228b22",
+                width=400,
+                height=50,
+                command=self.acknowledge_emergency
+            )
+        else:
+            ack_button = tk.Button(
+                main_frame,
+                text="✅ ACKNOWLEDGE EMERGENCY PROTOCOL",
+                font=("Orbitron", 16, "bold"),
+                bg="#32cd32",
+                fg="white",
+                width=35,
+                height=2,
+                command=self.acknowledge_emergency
+            )
+        ack_button.pack(pady=30)
+        
+        # Instructions
+        if CUSTOM_TK_AVAILABLE:
+            instructions = ctk.CTkLabel(
+                main_frame,
+                text="⌨️ Press ESC or F12 to acknowledge | Protocol will continue until acknowledged",
+                font=ctk.CTkFont(size=12),
+                text_color="#ffffff"
+            )
+        else:
+            instructions = tk.Label(
+                main_frame,
+                text="⌨️ Press ESC or F12 to acknowledge | Protocol will continue until acknowledged",
+                font=("Orbitron", 12),
+                fg="#ffffff",
+                bg="#8b0000"
+            )
+        instructions.pack(pady=10)
+        
+        # Keyboard bindings
+        self.dialog.bind('<Escape>', lambda e: self.acknowledge_emergency())
+        self.dialog.bind('<F12>', lambda e: self.acknowledge_emergency())
+        
+        # Auto-focus
+        self.dialog.focus_set()
+        
+        # Start urgent pulsing
+        self.start_urgent_animation()
+        
+    def start_urgent_animation(self):
+        """Start subtle urgent animation without flickering"""
+        self.pulse_direction = 1
+        self.pulse_alpha = 1.0
+        
+        def smooth_pulse():
+            try:
+                if self.dialog and self.dialog.winfo_exists():
+                    # Smooth pulsing animation
+                    self.pulse_alpha += self.pulse_direction * 0.05
+                    
+                    # Reverse direction at limits
+                    if self.pulse_alpha >= 1.0:
+                        self.pulse_alpha = 1.0
+                        self.pulse_direction = -1
+                    elif self.pulse_alpha <= 0.85:
+                        self.pulse_alpha = 0.85
+                        self.pulse_direction = 1
+                    
+                    self.dialog.attributes('-alpha', self.pulse_alpha)
+                    
+                    # Smoother animation with shorter intervals
+                    self.dialog.after(100, smooth_pulse)
+            except:
+                pass
+        
+        smooth_pulse()
+        
+    def acknowledge_emergency(self):
+        """Acknowledge the emergency protocol"""
+        try:
+            print("✅ Emergency protocol acknowledged by user")
+            if self.dialog:
+                self.dialog.destroy()
+                # Clear reference to allow new dialogs
+                if hasattr(self, 'parent') and hasattr(self.parent, 'immediate_dialog'):
+                    self.parent.immediate_dialog = None
+        except Exception as e:
+            print(f"Acknowledge error: {e}")
