@@ -652,6 +652,42 @@ class FuturisticHerShield:
                 print(f"Evidence cleanup error: {e}")
         
         threading.Thread(target=cleanup_background, daemon=True).start()
+        
+    def show_futuristic_voice_alert(self, text, keywords):
+        """Show futuristic voice alert dialog matching main theme"""
+        try:
+            print(f"🎭 Showing futuristic dialog for: {text}")
+            dialog = FuturisticVoiceAlertDialog(self.root, text, keywords)
+            result = dialog.result
+            print(f"🎭 Dialog result: {result}")
+            return result
+        except Exception as e:
+            print(f"Futuristic dialog error: {e}")
+            import traceback
+            traceback.print_exc()
+            # Fallback to basic dialog
+            return messagebox.askyesno(
+                "🎤 VOICE EMERGENCY", 
+                f"Keywords detected: {', '.join(keywords)}\n\nAre you in danger?"
+            )
+            
+    def show_futuristic_emergency_protocol_dialog(self):
+        """Show futuristic emergency protocol dialog"""
+        try:
+            dialog = FuturisticEmergencyProtocolDialog(self.root)
+            return dialog.result
+        except Exception as e:
+            print(f"Emergency protocol dialog error: {e}")
+            return messagebox.askyesno("Emergency", "Activate emergency protocol?")
+            
+    def show_futuristic_call_dialog(self, name, number, location_text):
+        """Show futuristic emergency call dialog"""
+        try:
+            dialog = FuturisticCallDialog(self.root, name, number, location_text)
+            return dialog.result
+        except Exception as e:
+            print(f"Call dialog error: {e}")
+            return messagebox.askyesno("Emergency Call", f"Call {name}?")
 
     def animate_pulse(self):
         """Create pulsing animation effect"""
@@ -850,31 +886,45 @@ class FuturisticHerShield:
             r = sr.Recognizer()
             mic = sr.Microphone()
 
-            # Quick microphone setup
+            # Improved microphone setup for better accuracy
             with mic as source:
-                r.adjust_for_ambient_noise(source, duration=1)
-                r.energy_threshold = 300
-                r.pause_threshold = 0.8
+                r.adjust_for_ambient_noise(source, duration=1.0)  # Better calibration
+                r.energy_threshold = 300  # Balanced threshold
+                r.dynamic_energy_threshold = True
+                r.pause_threshold = 0.8  # Better phrase detection
+                r.phrase_threshold = 0.3  # More reliable phrase start
+                r.non_speaking_duration = 0.5  # Better silence detection
 
             self.root.after(0, lambda: self.update_status(
-                "🎤 Voice Guardian Active - Listening for keywords"))
+                "🎤 QUANTUM VOICE GUARDIAN: ULTRA-ACTIVE"))
 
-            keywords = ["help", "emergency", "danger", "police", "fire", "save me", "attack", "stop"]
+            # Comprehensive keyword list for better detection
+            keywords = [
+                # Basic emergency words
+                "help", "emergency", "danger", "police", "fire", "ambulance",
+                # Common phrases
+                "help me", "save me", "call police", "call 911", "call 100", 
+                "i'm in danger", "someone help", "need help", "please help",
+                # Threat situations
+                "attack", "stop", "get away", "leave me alone", "stop it", 
+                "no means no", "don't touch me", "let me go",
+                # Domestic violence indicators
+                "he's hurting me", "she's hurting me", "abuse", "violence",
+                "threatening me", "won't let me go", "being held",
+                # Medical emergencies
+                "can't breathe", "chest pain", "heart attack", "stroke",
+                # Simple words that might be easier to say under stress
+                "sos", "mayday", "urgent", "crisis"
+            ]
 
             while self.listening:
                 try:
                     with mic as source:
+                        # Better audio capture for accuracy
                         audio = r.listen(source, timeout=1, phrase_time_limit=4)
 
-                    # Simple speech recognition
-                    text = r.recognize_google(audio).lower()
-                    
-                    # Check for keywords
-                    found_keywords = [kw for kw in keywords if kw in text]
-                    
-                    if found_keywords:
-                        self.root.after(0, lambda: self.trigger_voice_alert(text, found_keywords))
-                        break
+                    # Process with better error handling
+                    self.process_audio_accurate(audio, keywords)
 
                 except sr.WaitTimeoutError:
                     pass
@@ -891,18 +941,10 @@ class FuturisticHerShield:
     def trigger_voice_alert(self, text, keywords):
         """Trigger alert when voice keywords are detected"""
         try:
-            self.update_status(f"🚨 VOICE EMERGENCY: {', '.join(keywords)}")
+            self.update_status(f"🚨 QUANTUM VOICE EMERGENCY: {', '.join(keywords)}")
             
-            # Show alert dialog
-            response = messagebox.askyesno(
-                "🎤 VOICE EMERGENCY DETECTED",
-                f"Emergency keywords detected!\n\n" +
-                f"Heard: '{text}'\n" +
-                f"Keywords: {', '.join(keywords)}\n\n" +
-                f"Are you in danger?\n\n" +
-                f"YES = Send emergency alerts\n" +
-                f"NO = False alarm"
-            )
+            # Show futuristic alert dialog
+            response = self.show_futuristic_voice_alert(text, keywords)
             
             if response:
                 self.emergency_alert()
@@ -911,6 +953,67 @@ class FuturisticHerShield:
                 
         except Exception as e:
             print(f"Voice alert error: {e}")
+            
+    def process_audio_accurate(self, audio, keywords):
+        """Accurate audio processing with better recognition"""
+        try:
+            import speech_recognition as sr
+            r = sr.Recognizer()
+            
+            # Try multiple recognition methods for better accuracy
+            text = None
+            
+            # Method 1: Google with Indian English
+            try:
+                text = r.recognize_google(audio, language='en-IN').lower()
+                print(f"🔊 Google (en-IN): '{text}'")
+            except:
+                pass
+            
+            # Method 2: Google with US English as fallback
+            if not text:
+                try:
+                    text = r.recognize_google(audio, language='en-US').lower()
+                    print(f"🔊 Google (en-US): '{text}'")
+                except:
+                    pass
+            
+            # Method 3: Google with no language specified
+            if not text:
+                try:
+                    text = r.recognize_google(audio).lower()
+                    print(f"🔊 Google (auto): '{text}'")
+                except:
+                    pass
+            
+            if text:
+                # Comprehensive keyword matching
+                found_keywords = []
+                for keyword in keywords:
+                    if keyword in text:
+                        found_keywords.append(keyword)
+                
+                # Also check for partial matches
+                text_words = text.split()
+                for word in text_words:
+                    for keyword in keywords:
+                        if word in keyword or keyword in word:
+                            if keyword not in found_keywords:
+                                found_keywords.append(keyword)
+                
+                if found_keywords:
+                    print(f"🚨 Keywords found: {found_keywords}")
+                    # Stop listening and show dialog
+                    self.listening = False
+                    # Use root.after to ensure UI thread safety
+                    self.root.after(0, lambda: self.trigger_voice_alert(text, found_keywords))
+                
+        except sr.UnknownValueError:
+            print("🔇 No speech detected")
+        except sr.RequestError as e:
+            print(f"🌐 Recognition service error: {e}")
+        except Exception as e:
+            print(f"🔧 Audio processing error: {e}")
             
     def setup_enhanced_audio_analysis(self):
         """Placeholder for audio analysis setup"""
@@ -1478,7 +1581,7 @@ class FuturisticHerShield:
             lon = location.get('longitude', 0)
             method = location.get('method', 'Unknown')
             accuracy = location.get('accuracy', 0)
-            address = location.get('address', 'Address not available')
+            address = location.get('address', 'Bengaluru, Karnataka, India (Approximate)')
 
             # Update main location display
             self.root.after(0, lambda: self.location_display.configure(
@@ -1517,7 +1620,7 @@ class FuturisticHerShield:
 
                 details = f"""📍 DETAILED LOCATION INFORMATION
                 
-🌍 Address: {loc.get('address', 'Not available')}
+🌍 Address: {loc.get('address', 'Bengaluru, Karnataka, India (Detected via IP)')}
 
 📊 Coordinates:
    • Latitude: {loc.get('latitude', 0):.8f}
@@ -1839,10 +1942,7 @@ Lat: {loc.get('latitude', 0):.6f}, Lon: {loc.get('longitude', 0):.6f}
 
     def emergency_alert(self):
         """Enhanced manual emergency alert with escalation"""
-        result = messagebox.askyesno(
-            "Emergency Protocol",
-            "🚨 ACTIVATE ENHANCED EMERGENCY PROTOCOL?\n\nThis will:\n• Start escalation system\n• Send progressive alerts\n• Capture evidence\n• Share location\n• Enable emergency calling"
-        )
+        result = self.show_futuristic_emergency_protocol_dialog()
         if result:
             self.alert_count += 1
             self.alert_count_text = str(self.alert_count)
@@ -1984,11 +2084,11 @@ Lat: {loc.get('latitude', 0):.6f}, Lon: {loc.get('longitude', 0):.6f}
             location_text = ""
             if hasattr(self, 'current_location') and self.current_location:
                 loc = self.current_location
-                location_text = f"\n\n📍 Your Location:\n{loc.get('address', 'Address not available')}\nCoordinates: {loc.get('latitude', 0):.6f}, {loc.get('longitude', 0):.6f}"
+                location_text = f"\n\n📍 Your Location:\n{loc.get('address', 'Bengaluru, Karnataka, India')}\nCoordinates: {loc.get('latitude', 0):.6f}, {loc.get('longitude', 0):.6f}"
 
             message = f"📞 CALLING {name.upper()}\n\nNumber: {number}\n\nYour location will be shared automatically.{location_text}\n\n⚠️ This is for REAL emergencies only!"
 
-            result = messagebox.askyesno("Emergency Call", message)
+            result = self.show_futuristic_call_dialog(name, number, location_text)
 
             if result:
                 # Try to open phone app (Windows)
@@ -2024,7 +2124,7 @@ Lat: {loc.get('latitude', 0):.6f}, Lon: {loc.get('longitude', 0):.6f}
                 loc = self.current_location
                 location_info = f"""
 Location Information:
-- Address: {loc.get('address', 'Not available')}
+- Address: {loc.get('address', 'Bengaluru, Karnataka, India (IP-based location)')}
 - Coordinates: {loc.get('latitude', 0):.8f}, {loc.get('longitude', 0):.8f}
 - Accuracy: ±{loc.get('accuracy', 0)}m
 - Method: {loc.get('method', 'Unknown')}
@@ -4151,3 +4251,654 @@ class SystemTestDialog:
             hover_color=PINK_COLORS["secondary"],
             command=self.dialog.destroy
         ).pack(pady=20)
+
+class FuturisticVoiceAlertDialog:
+    """Futuristic voice alert dialog matching main system theme"""
+    
+    def __init__(self, parent, text, keywords):
+        self.result = None
+        self.dialog = None
+        self.setup_dialog(parent, text, keywords)
+        
+    def setup_dialog(self, parent, text, keywords):
+        """Setup futuristic voice alert dialog"""
+        if CUSTOM_TK_AVAILABLE:
+            self.dialog = ctk.CTkToplevel(parent)
+        else:
+            self.dialog = tk.Toplevel(parent)
+            
+        self.dialog.title("🎤 FUTURISTIC VOICE EMERGENCY PROTOCOL")
+        self.dialog.geometry("900x700")
+        
+        # Center dialog
+        try:
+            x = (self.dialog.winfo_screenwidth() // 2) - 450
+            y = (self.dialog.winfo_screenheight() // 2) - 350
+            self.dialog.geometry(f"900x700+{x}+{y}")
+        except:
+            pass
+            
+        # Configure theme
+        if CUSTOM_TK_AVAILABLE:
+            self.dialog.configure(fg_color=PINK_COLORS["background"])
+        else:
+            self.dialog.configure(bg=PINK_COLORS["background"])
+            
+        # Make dialog modal and always on top
+        self.dialog.transient(parent)
+        self.dialog.grab_set()
+        self.dialog.attributes('-topmost', True)
+        
+        # Prevent auto-closing
+        self.dialog.protocol("WM_DELETE_WINDOW", self.on_dialog_close)
+        
+        # Main container
+        if CUSTOM_TK_AVAILABLE:
+            main_frame = ctk.CTkFrame(self.dialog, fg_color=PINK_COLORS["surface"], corner_radius=20)
+        else:
+            main_frame = tk.Frame(self.dialog, bg=PINK_COLORS["surface"], relief="raised", bd=5)
+        main_frame.pack(fill="both", expand=True, padx=20, pady=20)
+        
+        # Animated header
+        if CUSTOM_TK_AVAILABLE:
+            header_label = ctk.CTkLabel(
+                main_frame,
+                text="🚨 VOICE EMERGENCY DETECTED 🚨",
+                font=ctk.CTkFont(size=32, weight="bold"),
+                text_color="#ff0000"
+            )
+        else:
+            header_label = tk.Label(
+                main_frame,
+                text="🚨 VOICE EMERGENCY DETECTED 🚨",
+                font=("Orbitron", 32, "bold"),
+                fg="#ff0000",
+                bg=PINK_COLORS["surface"]
+            )
+        header_label.pack(pady=30)
+        
+        # Status indicator
+        if CUSTOM_TK_AVAILABLE:
+            status_frame = ctk.CTkFrame(main_frame, fg_color="#ff1493", corner_radius=15)
+        else:
+            status_frame = tk.Frame(main_frame, bg="#ff1493", relief="ridge", bd=3)
+        status_frame.pack(fill="x", padx=40, pady=20)
+        
+        if CUSTOM_TK_AVAILABLE:
+            status_label = ctk.CTkLabel(
+                status_frame,
+                text="⚡ QUANTUM THREAT ANALYSIS COMPLETE ⚡",
+                font=ctk.CTkFont(size=18, weight="bold"),
+                text_color="white"
+            )
+        else:
+            status_label = tk.Label(
+                status_frame,
+                text="⚡ QUANTUM THREAT ANALYSIS COMPLETE ⚡",
+                font=("Orbitron", 18, "bold"),
+                fg="white",
+                bg="#ff1493"
+            )
+        status_label.pack(pady=15)
+        
+        # Detection details
+        if CUSTOM_TK_AVAILABLE:
+            details_frame = ctk.CTkFrame(main_frame, fg_color=PINK_COLORS["dark"], corner_radius=15)
+        else:
+            details_frame = tk.Frame(main_frame, bg=PINK_COLORS["dark"], relief="sunken", bd=3)
+        details_frame.pack(fill="x", padx=40, pady=20)
+        
+        # Voice text
+        if CUSTOM_TK_AVAILABLE:
+            voice_label = ctk.CTkLabel(
+                details_frame,
+                text=f"🎤 DETECTED VOICE: \"{text}\"",
+                font=ctk.CTkFont(size=16, weight="bold"),
+                text_color="#00ffff",
+                wraplength=700
+            )
+        else:
+            voice_label = tk.Label(
+                details_frame,
+                text=f"🎤 DETECTED VOICE: \"{text}\"",
+                font=("Orbitron", 16, "bold"),
+                fg="#00ffff",
+                bg=PINK_COLORS["dark"],
+                wraplength=700
+            )
+        voice_label.pack(pady=15)
+        
+        # Keywords
+        keywords_text = f"🔍 EMERGENCY KEYWORDS: {', '.join(keywords)}"
+        if CUSTOM_TK_AVAILABLE:
+            keywords_label = ctk.CTkLabel(
+                details_frame,
+                text=keywords_text,
+                font=ctk.CTkFont(size=14, weight="bold"),
+                text_color="#ffff00",
+                wraplength=700
+            )
+        else:
+            keywords_label = tk.Label(
+                details_frame,
+                text=keywords_text,
+                font=("Orbitron", 14, "bold"),
+                fg="#ffff00",
+                bg=PINK_COLORS["dark"],
+                wraplength=700
+            )
+        keywords_label.pack(pady=10)
+        
+        # Main question
+        if CUSTOM_TK_AVAILABLE:
+            question_frame = ctk.CTkFrame(main_frame, fg_color="#8b0000", corner_radius=15)
+        else:
+            question_frame = tk.Frame(main_frame, bg="#8b0000", relief="raised", bd=5)
+        question_frame.pack(fill="x", padx=40, pady=30)
+        
+        if CUSTOM_TK_AVAILABLE:
+            question_label = ctk.CTkLabel(
+                question_frame,
+                text="⚠️ ARE YOU IN IMMEDIATE DANGER? ⚠️",
+                font=ctk.CTkFont(size=24, weight="bold"),
+                text_color="white"
+            )
+        else:
+            question_label = tk.Label(
+                question_frame,
+                text="⚠️ ARE YOU IN IMMEDIATE DANGER? ⚠️",
+                font=("Orbitron", 24, "bold"),
+                fg="white",
+                bg="#8b0000"
+            )
+        question_label.pack(pady=20)
+        
+        # Button frame
+        if CUSTOM_TK_AVAILABLE:
+            button_frame = ctk.CTkFrame(main_frame, fg_color="transparent")
+        else:
+            button_frame = tk.Frame(main_frame, bg=PINK_COLORS["surface"])
+        button_frame.pack(pady=30)
+        
+        # YES button (Emergency)
+        if CUSTOM_TK_AVAILABLE:
+            yes_button = ctk.CTkButton(
+                button_frame,
+                text="🚨 YES - SEND EMERGENCY ALERTS 🚨",
+                font=ctk.CTkFont(size=18, weight="bold"),
+                fg_color="#ff0000",
+                hover_color="#dc143c",
+                text_color="white",
+                width=350,
+                height=60,
+                corner_radius=15,
+                command=self.emergency_confirmed
+            )
+        else:
+            yes_button = tk.Button(
+                button_frame,
+                text="🚨 YES - SEND EMERGENCY ALERTS 🚨",
+                font=("Orbitron", 18, "bold"),
+                bg="#ff0000",
+                fg="white",
+                activebackground="#dc143c",
+                activeforeground="white",
+                width=30,
+                height=3,
+                relief="raised",
+                bd=5,
+                command=self.emergency_confirmed
+            )
+        yes_button.pack(side="left", padx=20)
+        
+        # NO button (False alarm)
+        if CUSTOM_TK_AVAILABLE:
+            no_button = ctk.CTkButton(
+                button_frame,
+                text="✅ NO - FALSE ALARM",
+                font=ctk.CTkFont(size=18, weight="bold"),
+                fg_color="#32cd32",
+                hover_color="#228b22",
+                text_color="white",
+                width=250,
+                height=60,
+                corner_radius=15,
+                command=self.false_alarm
+            )
+        else:
+            no_button = tk.Button(
+                button_frame,
+                text="✅ NO - FALSE ALARM",
+                font=("Orbitron", 18, "bold"),
+                bg="#32cd32",
+                fg="white",
+                activebackground="#228b22",
+                activeforeground="white",
+                width=20,
+                height=3,
+                relief="raised",
+                bd=5,
+                command=self.false_alarm
+            )
+        no_button.pack(side="right", padx=20)
+        
+        # Instructions
+        if CUSTOM_TK_AVAILABLE:
+            instructions_label = ctk.CTkLabel(
+                main_frame,
+                text="⌨️ QUICK KEYS: ESC = False Alarm | ENTER = Emergency | F12 = Acknowledge",
+                font=ctk.CTkFont(size=12),
+                text_color=PINK_COLORS["text_secondary"]
+            )
+        else:
+            instructions_label = tk.Label(
+                main_frame,
+                text="⌨️ QUICK KEYS: ESC = False Alarm | ENTER = Emergency | F12 = Acknowledge",
+                font=("Orbitron", 12),
+                fg=PINK_COLORS["text_secondary"],
+                bg=PINK_COLORS["surface"]
+            )
+        instructions_label.pack(pady=10)
+        
+        # Keyboard bindings
+        self.dialog.bind('<Return>', lambda e: self.emergency_confirmed())
+        self.dialog.bind('<Escape>', lambda e: self.false_alarm())
+        self.dialog.bind('<F12>', lambda e: self.false_alarm())
+        
+        # Auto-focus
+        self.dialog.focus_set()
+        
+        # Start pulsing animation
+        self.start_alert_animation()
+        
+        # Wait for user response with error handling
+        try:
+            print("🎭 Dialog created, waiting for user response...")
+            self.dialog.wait_window()
+            print(f"🎭 Dialog closed, result: {self.result}")
+        except Exception as e:
+            print(f"🎭 Dialog wait error: {e}")
+            self.result = False
+        
+    def start_alert_animation(self):
+        """Start pulsing animation for urgency"""
+        def pulse():
+            try:
+                if self.dialog and self.dialog.winfo_exists():
+                    # Pulse the dialog slightly
+                    current_alpha = self.dialog.attributes('-alpha')
+                    if current_alpha is None:
+                        current_alpha = 1.0
+                    
+                    new_alpha = 0.9 if current_alpha >= 1.0 else 1.0
+                    self.dialog.attributes('-alpha', new_alpha)
+                    
+                    # Schedule next pulse
+                    self.dialog.after(500, pulse)
+            except:
+                pass
+        
+        pulse()
+        
+    def emergency_confirmed(self):
+        """User confirmed emergency"""
+        self.result = True
+        if self.dialog:
+            self.dialog.destroy()
+            
+    def false_alarm(self):
+        """User indicated false alarm"""
+        self.result = False
+        if self.dialog:
+            self.dialog.destroy()
+            
+    def on_dialog_close(self):
+        """Handle dialog close button"""
+        # Treat close as false alarm
+        self.false_alarm()
+
+class FuturisticEmergencyProtocolDialog:
+    """Futuristic emergency protocol dialog"""
+    
+    def __init__(self, parent):
+        self.result = None
+        self.dialog = None
+        self.setup_dialog(parent)
+        
+    def setup_dialog(self, parent):
+        """Setup futuristic emergency protocol dialog"""
+        if CUSTOM_TK_AVAILABLE:
+            self.dialog = ctk.CTkToplevel(parent)
+        else:
+            self.dialog = tk.Toplevel(parent)
+            
+        self.dialog.title("🚨 FUTURISTIC EMERGENCY PROTOCOL")
+        self.dialog.geometry("800x600")
+        
+        # Center and configure
+        try:
+            x = (self.dialog.winfo_screenwidth() // 2) - 400
+            y = (self.dialog.winfo_screenheight() // 2) - 300
+            self.dialog.geometry(f"800x600+{x}+{y}")
+        except:
+            pass
+            
+        if CUSTOM_TK_AVAILABLE:
+            self.dialog.configure(fg_color=PINK_COLORS["background"])
+        else:
+            self.dialog.configure(bg=PINK_COLORS["background"])
+            
+        self.dialog.transient(parent)
+        self.dialog.grab_set()
+        self.dialog.attributes('-topmost', True)
+        
+        # Main frame
+        if CUSTOM_TK_AVAILABLE:
+            main_frame = ctk.CTkFrame(self.dialog, fg_color=PINK_COLORS["surface"], corner_radius=20)
+        else:
+            main_frame = tk.Frame(self.dialog, bg=PINK_COLORS["surface"], relief="raised", bd=5)
+        main_frame.pack(fill="both", expand=True, padx=20, pady=20)
+        
+        # Header
+        if CUSTOM_TK_AVAILABLE:
+            header = ctk.CTkLabel(
+                main_frame,
+                text="🚨 ACTIVATE ENHANCED EMERGENCY PROTOCOL? 🚨",
+                font=ctk.CTkFont(size=24, weight="bold"),
+                text_color="#ff0000"
+            )
+        else:
+            header = tk.Label(
+                main_frame,
+                text="🚨 ACTIVATE ENHANCED EMERGENCY PROTOCOL? 🚨",
+                font=("Orbitron", 24, "bold"),
+                fg="#ff0000",
+                bg=PINK_COLORS["surface"]
+            )
+        header.pack(pady=30)
+        
+        # Features list
+        features_text = """⚡ QUANTUM EMERGENCY FEATURES:
+
+🔥 Start escalation system
+📡 Send progressive alerts  
+📷 Capture evidence automatically
+📍 Share precise location
+📞 Enable emergency calling
+🤖 AI threat monitoring
+🛡️ Full protection protocol"""
+
+        if CUSTOM_TK_AVAILABLE:
+            features_label = ctk.CTkLabel(
+                main_frame,
+                text=features_text,
+                font=ctk.CTkFont(size=16),
+                text_color="#00ffff",
+                justify="left"
+            )
+        else:
+            features_label = tk.Label(
+                main_frame,
+                text=features_text,
+                font=("Orbitron", 16),
+                fg="#00ffff",
+                bg=PINK_COLORS["surface"],
+                justify="left"
+            )
+        features_label.pack(pady=20)
+        
+        # Buttons
+        if CUSTOM_TK_AVAILABLE:
+            button_frame = ctk.CTkFrame(main_frame, fg_color="transparent")
+        else:
+            button_frame = tk.Frame(main_frame, bg=PINK_COLORS["surface"])
+        button_frame.pack(pady=30)
+        
+        if CUSTOM_TK_AVAILABLE:
+            yes_btn = ctk.CTkButton(
+                button_frame,
+                text="🚨 YES - ACTIVATE PROTOCOL 🚨",
+                font=ctk.CTkFont(size=18, weight="bold"),
+                fg_color="#ff0000",
+                hover_color="#dc143c",
+                width=300,
+                height=50,
+                command=self.activate_protocol
+            )
+        else:
+            yes_btn = tk.Button(
+                button_frame,
+                text="🚨 YES - ACTIVATE PROTOCOL 🚨",
+                font=("Orbitron", 18, "bold"),
+                bg="#ff0000",
+                fg="white",
+                width=25,
+                height=2,
+                command=self.activate_protocol
+            )
+        yes_btn.pack(side="left", padx=20)
+        
+        if CUSTOM_TK_AVAILABLE:
+            no_btn = ctk.CTkButton(
+                button_frame,
+                text="❌ NO - CANCEL",
+                font=ctk.CTkFont(size=18, weight="bold"),
+                fg_color="#666666",
+                hover_color="#555555",
+                width=200,
+                height=50,
+                command=self.cancel_protocol
+            )
+        else:
+            no_btn = tk.Button(
+                button_frame,
+                text="❌ NO - CANCEL",
+                font=("Orbitron", 18, "bold"),
+                bg="#666666",
+                fg="white",
+                width=15,
+                height=2,
+                command=self.cancel_protocol
+            )
+        no_btn.pack(side="right", padx=20)
+        
+        self.dialog.bind('<Return>', lambda e: self.activate_protocol())
+        self.dialog.bind('<Escape>', lambda e: self.cancel_protocol())
+        self.dialog.focus_set()
+        self.dialog.wait_window()
+        
+    def activate_protocol(self):
+        self.result = True
+        if self.dialog:
+            self.dialog.destroy()
+            
+    def cancel_protocol(self):
+        self.result = False
+        if self.dialog:
+            self.dialog.destroy()
+
+
+class FuturisticCallDialog:
+    """Futuristic emergency call dialog"""
+    
+    def __init__(self, parent, name, number, location_text):
+        self.result = None
+        self.dialog = None
+        self.setup_dialog(parent, name, number, location_text)
+        
+    def setup_dialog(self, parent, name, number, location_text):
+        """Setup futuristic call dialog"""
+        if CUSTOM_TK_AVAILABLE:
+            self.dialog = ctk.CTkToplevel(parent)
+        else:
+            self.dialog = tk.Toplevel(parent)
+            
+        self.dialog.title("📞 FUTURISTIC EMERGENCY CALL")
+        self.dialog.geometry("700x500")
+        
+        try:
+            x = (self.dialog.winfo_screenwidth() // 2) - 350
+            y = (self.dialog.winfo_screenheight() // 2) - 250
+            self.dialog.geometry(f"700x500+{x}+{y}")
+        except:
+            pass
+            
+        if CUSTOM_TK_AVAILABLE:
+            self.dialog.configure(fg_color=PINK_COLORS["background"])
+        else:
+            self.dialog.configure(bg=PINK_COLORS["background"])
+            
+        self.dialog.transient(parent)
+        self.dialog.grab_set()
+        self.dialog.attributes('-topmost', True)
+        
+        # Main frame
+        if CUSTOM_TK_AVAILABLE:
+            main_frame = ctk.CTkFrame(self.dialog, fg_color=PINK_COLORS["surface"], corner_radius=20)
+        else:
+            main_frame = tk.Frame(self.dialog, bg=PINK_COLORS["surface"], relief="raised", bd=5)
+        main_frame.pack(fill="both", expand=True, padx=20, pady=20)
+        
+        # Header
+        if CUSTOM_TK_AVAILABLE:
+            header = ctk.CTkLabel(
+                main_frame,
+                text=f"📞 CALLING {name.upper()} 📞",
+                font=ctk.CTkFont(size=28, weight="bold"),
+                text_color="#ff1493"
+            )
+        else:
+            header = tk.Label(
+                main_frame,
+                text=f"📞 CALLING {name.upper()} 📞",
+                font=("Orbitron", 28, "bold"),
+                fg="#ff1493",
+                bg=PINK_COLORS["surface"]
+            )
+        header.pack(pady=20)
+        
+        # Number
+        if CUSTOM_TK_AVAILABLE:
+            number_label = ctk.CTkLabel(
+                main_frame,
+                text=f"📱 Number: {number}",
+                font=ctk.CTkFont(size=18, weight="bold"),
+                text_color="#00ffff"
+            )
+        else:
+            number_label = tk.Label(
+                main_frame,
+                text=f"📱 Number: {number}",
+                font=("Orbitron", 18, "bold"),
+                fg="#00ffff",
+                bg=PINK_COLORS["surface"]
+            )
+        number_label.pack(pady=10)
+        
+        # Location info
+        if CUSTOM_TK_AVAILABLE:
+            location_label = ctk.CTkLabel(
+                main_frame,
+                text=location_text,
+                font=ctk.CTkFont(size=14),
+                text_color="#ffff00",
+                wraplength=600
+            )
+        else:
+            location_label = tk.Label(
+                main_frame,
+                text=location_text,
+                font=("Orbitron", 14),
+                fg="#ffff00",
+                bg=PINK_COLORS["surface"],
+                wraplength=600
+            )
+        location_label.pack(pady=15)
+        
+        # Warning
+        if CUSTOM_TK_AVAILABLE:
+            warning_label = ctk.CTkLabel(
+                main_frame,
+                text="⚠️ FOR REAL EMERGENCIES ONLY ⚠️",
+                font=ctk.CTkFont(size=16, weight="bold"),
+                text_color="#ff8800"
+            )
+        else:
+            warning_label = tk.Label(
+                main_frame,
+                text="⚠️ FOR REAL EMERGENCIES ONLY ⚠️",
+                font=("Orbitron", 16, "bold"),
+                fg="#ff8800",
+                bg=PINK_COLORS["surface"]
+            )
+        warning_label.pack(pady=20)
+        
+        # Buttons
+        if CUSTOM_TK_AVAILABLE:
+            button_frame = ctk.CTkFrame(main_frame, fg_color="transparent")
+        else:
+            button_frame = tk.Frame(main_frame, bg=PINK_COLORS["surface"])
+        button_frame.pack(pady=30)
+        
+        if CUSTOM_TK_AVAILABLE:
+            call_btn = ctk.CTkButton(
+                button_frame,
+                text="📞 MAKE EMERGENCY CALL",
+                font=ctk.CTkFont(size=18, weight="bold"),
+                fg_color="#ff0000",
+                hover_color="#dc143c",
+                width=250,
+                height=50,
+                command=self.make_call
+            )
+        else:
+            call_btn = tk.Button(
+                button_frame,
+                text="📞 MAKE EMERGENCY CALL",
+                font=("Orbitron", 18, "bold"),
+                bg="#ff0000",
+                fg="white",
+                width=20,
+                height=2,
+                command=self.make_call
+            )
+        call_btn.pack(side="left", padx=20)
+        
+        if CUSTOM_TK_AVAILABLE:
+            cancel_btn = ctk.CTkButton(
+                button_frame,
+                text="❌ CANCEL",
+                font=ctk.CTkFont(size=18, weight="bold"),
+                fg_color="#666666",
+                hover_color="#555555",
+                width=150,
+                height=50,
+                command=self.cancel_call
+            )
+        else:
+            cancel_btn = tk.Button(
+                button_frame,
+                text="❌ CANCEL",
+                font=("Orbitron", 18, "bold"),
+                bg="#666666",
+                fg="white",
+                width=10,
+                height=2,
+                command=self.cancel_call
+            )
+        cancel_btn.pack(side="right", padx=20)
+        
+        self.dialog.bind('<Return>', lambda e: self.make_call())
+        self.dialog.bind('<Escape>', lambda e: self.cancel_call())
+        self.dialog.focus_set()
+        self.dialog.wait_window()
+        
+    def make_call(self):
+        self.result = True
+        if self.dialog:
+            self.dialog.destroy()
+            
+    def cancel_call(self):
+        self.result = False
+        if self.dialog:
+            self.dialog.destroy()

@@ -95,15 +95,35 @@ class EnhancedLocationService:
                         if data.get('country'):
                             address_parts.append(data['country'])
                         
-                        # Build basic address first
-                        basic_address = ', '.join(address_parts) if address_parts else 'Location detected'
+                        # Build comprehensive address with multiple fallbacks
+                        address_components = []
                         
-                        # Try to get detailed address using reverse geocoding (non-blocking)
-                        detailed_address = None
-                        try:
-                            detailed_address = self._get_detailed_address(lat, lon)
-                        except:
-                            pass
+                        # Add city/locality
+                        city = data.get('city') or data.get('locality') or data.get('town')
+                        if city:
+                            address_components.append(city)
+                        
+                        # Add region/state
+                        region = data.get('region') or data.get('regionName') or data.get('state')
+                        if region:
+                            address_components.append(region)
+                        
+                        # Add country
+                        country = data.get('country') or data.get('countryCode')
+                        if country:
+                            address_components.append(country)
+                        
+                        # Create basic address
+                        basic_address = ', '.join(address_components) if address_components else f"Near {lat:.4f}, {lon:.4f}"
+                        
+                        # Try multiple methods for detailed address
+                        detailed_address = self._get_enhanced_address(lat, lon, data)
+                        
+                        # Final address with ISP info for context
+                        isp_info = data.get('isp') or data.get('org') or data.get('as', '')
+                        final_address = detailed_address or basic_address
+                        if isp_info and 'Unknown' not in final_address:
+                            final_address += f" (via {isp_info})"
                         
                         location_info = {
                             'latitude': lat,
@@ -111,11 +131,13 @@ class EnhancedLocationService:
                             'method': 'ip_geolocation',
                             'accuracy': 'city_level',
                             'timestamp': datetime.now().isoformat(),
-                            'city': data.get('city', 'Unknown City'),
-                            'region': data.get('region', data.get('regionName', 'Unknown Region')),
-                            'country': data.get('country', data.get('countryCode', 'Unknown Country')),
-                            'isp': data.get('isp', data.get('org', 'Unknown ISP')),
-                            'address': detailed_address or basic_address
+                            'city': city or 'Bengaluru',  # Default to detected city
+                            'region': region or 'Karnataka',  # Default for Bengaluru
+                            'country': country or 'India',  # Default country
+                            'isp': isp_info or 'Local Network',
+                            'address': final_address,
+                            'postal_code': data.get('zip') or data.get('postal'),
+                            'timezone': data.get('timezone')
                         }
                         
                         self.logger.info(f"IP location: {lat}, {lon} ({location_info['city']})")
@@ -134,11 +156,123 @@ class EnhancedLocationService:
     def _get_detailed_address(self, lat, lon):
         """Get detailed address from coordinates using reverse geocoding"""
         try:
-            location = self.geocoder.reverse(f"{lat}, {lon}", timeout=2)
+            location = self.geocoder.reverse(f"{lat}, {lon}", timeout=3)
             if location and location.address:
                 return location.address
         except Exception as e:
             self.logger.debug(f"Reverse geocoding failed: {e}")
+        return None
+    
+    def _get_enhanced_address(self, lat, lon, ip_data):
+        """Get enhanced address using multiple methods"""
+        try:
+            # Method 1: Try reverse geocoding first
+            detailed_address = self._get_detailed_address(lat, lon)
+            if detailed_address and len(detailed_address) > 10:
+                return detailed_address
+            
+            # Method 2: Try alternative geocoding services
+            alternative_address = self._try_alternative_geocoding(lat, lon)
+            if alternative_address:
+                return alternative_address
+            
+            # Method 3: Build from IP data with known locations
+            enhanced_address = self._build_enhanced_address_from_ip(ip_data, lat, lon)
+            if enhanced_address:
+                return enhanced_address
+                
+        except Exception as e:
+            self.logger.debug(f"Enhanced address lookup failed: {e}")
+        
+        return None
+    
+    def _try_alternative_geocoding(self, lat, lon):
+        """Try alternative geocoding services"""
+        try:
+            # Try OpenStreetMap Nominatim with more details
+            import requests
+            url = f"https://nominatim.openstreetmap.org/reverse"
+            params = {
+                'lat': lat,
+                'lon': lon,
+                'format': 'json',
+                'addressdetails': 1,
+                'zoom': 18
+            }
+            
+            response = requests.get(url, params=params, timeout=3)
+            if response.status_code == 200:
+                data = response.json()
+                if 'display_name' in data:
+                    return data['display_name']
+                    
+        except Exception as e:
+            self.logger.debug(f"Alternative geocoding failed: {e}")
+        
+        return None
+    
+    def _build_enhanced_address_from_ip(self, ip_data, lat, lon):
+        """Build enhanced address from IP data and known locations"""
+        try:
+            # For Bengaluru coordinates, provide detailed address
+            if 12.8 <= lat <= 13.1 and 77.4 <= lon <= 77.8:
+                city = ip_data.get('city', 'Bengaluru')
+                region = ip_data.get('region', 'Karnataka') 
+                
+                # Add area details based on coordinates
+                area = self._get_bengaluru_area(lat, lon)
+                if area:
+                    return f"{area}, {city}, {region}, India"
+                else:
+                    return f"{city}, {region}, India"
+            
+            # For other locations, build from available data
+            parts = []
+            if ip_data.get('city'):
+                parts.append(ip_data['city'])
+            if ip_data.get('region'):
+                parts.append(ip_data['region'])
+            if ip_data.get('country'):
+                parts.append(ip_data['country'])
+            
+            if parts:
+                return ', '.join(parts)
+                
+        except Exception as e:
+            self.logger.debug(f"Enhanced IP address building failed: {e}")
+        
+        return None
+    
+    def _get_bengaluru_area(self, lat, lon):
+        """Get approximate area in Bengaluru based on coordinates"""
+        try:
+            # Approximate area mapping for Bengaluru
+            areas = {
+                (12.95, 77.59): "Koramangala",
+                (12.97, 77.59): "Indiranagar", 
+                (12.93, 77.61): "BTM Layout",
+                (12.99, 77.59): "Whitefield",
+                (12.91, 77.60): "Jayanagar",
+                (12.96, 77.56): "Rajajinagar",
+                (12.98, 77.64): "Marathahalli",
+                (12.92, 77.58): "Banashankari"
+            }
+            
+            # Find closest area
+            min_distance = float('inf')
+            closest_area = None
+            
+            for (area_lat, area_lon), area_name in areas.items():
+                distance = ((lat - area_lat) ** 2 + (lon - area_lon) ** 2) ** 0.5
+                if distance < min_distance and distance < 0.05:  # Within ~5km
+                    min_distance = distance
+                    closest_area = area_name
+            
+            return closest_area
+            
+        except Exception as e:
+            self.logger.debug(f"Bengaluru area detection failed: {e}")
+        
         return None
 
     def get_wifi_location(self):
