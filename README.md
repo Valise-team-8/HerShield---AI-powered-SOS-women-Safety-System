@@ -155,16 +155,6 @@ HerShield/
 6. **Service Integration** - Optional emergency service alerts
 7. **Continuous Monitoring** - Ongoing threat assessment
 
-## 📱 Supported Platforms
-
-- **Windows** - Full functionality
-- **macOS** - Full functionality
-- **Linux** - Full functionality
-- **Mobile** - Planned for future releases
-
-## 🤝 Contributing
-
-We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
 
 ### Development Setup
 ```bash
@@ -173,25 +163,3 @@ cd HerShield---AI-powered-SOS-women-Safety-System
 pip install -r requirements-dev.txt
 python -m pytest tests/
 ```
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🆘 Support & Emergency
-
-- **Technical Support** - Create an issue on GitHub
-- **Emergency Services** - Always call local emergency numbers (911, 112, etc.)
-- **Documentation** - Check [MANUAL_FIREBASE_SETUP.md](MANUAL_FIREBASE_SETUP.md) for detailed setup
-
-## 🌟 Acknowledgments
-
-- Built with ❤️ for women's safety
-- Powered by AI and community support
-- Inspired by the need for accessible safety technology
-
----
-
-**⚠️ Important:** This system is designed to assist in emergency situations but should not replace proper emergency services. Always contact local authorities (911, 112, etc.) in life-threatening situations.
-
-**🛡️ Your safety matters. Stay protected with HerShield.**
