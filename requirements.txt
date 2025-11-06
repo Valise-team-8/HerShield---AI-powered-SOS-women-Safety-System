@@ -20,8 +20,8 @@ sounddevice>=0.4.6
 librosa>=0.10.0
 
 # GUI & Interface
-tkinter
-customtkinter>=5.2.0
+# tkinter (built-in with Python)
+customtkinter==5.2.2
 pillow>=10.0.0
 
 # Notifications & Alerts
