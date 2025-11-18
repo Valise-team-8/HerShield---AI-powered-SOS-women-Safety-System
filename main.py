@@ -1169,8 +1169,8 @@ class FuturisticHerShield:
         self.system_status.pack(side="left", padx=20)
 
     def create_futuristic_sidebar(self):
-        """Create futuristic sidebar (optional)"""
-        pass  # Can be implemented for additional features
+        """Create futuristic sidebar (removed for simplicity)"""
+        pass
 
     def start_animations(self):
         """Start futuristic animations"""
@@ -1189,40 +1189,29 @@ class FuturisticHerShield:
         threading.Thread(target=cleanup_background, daemon=True).start()
         
     def show_futuristic_voice_alert(self, text, keywords):
-        """Show futuristic voice alert dialog matching main theme"""
+        """Show simplified voice alert dialog"""
         try:
-            print(f"🎭 Showing futuristic dialog for: {text}")
-            dialog = FuturisticVoiceAlertDialog(self.root, text, keywords)
-            result = dialog.result
-            print(f"🎭 Dialog result: {result}")
-            return result
-        except Exception as e:
-            print(f"Futuristic dialog error: {e}")
-            import traceback
-            traceback.print_exc()
-            # Fallback to basic dialog
             return messagebox.askyesno(
-                "🎤 VOICE EMERGENCY", 
-                f"Keywords detected: {', '.join(keywords)}\n\nAre you in danger?"
+                "🚨 VOICE EMERGENCY DETECTED", 
+                f"Emergency keywords detected: {', '.join(keywords)}\n\nVoice: \"{text}\"\n\nAre you in danger?\n\nClick YES to activate emergency protocol."
             )
+        except Exception as e:
+            print(f"Voice alert error: {e}")
+            return True  # Default to emergency for safety
             
     def show_futuristic_emergency_protocol_dialog(self):
-        """Show futuristic emergency protocol dialog"""
-        try:
-            dialog = FuturisticEmergencyProtocolDialog(self.root)
-            return dialog.result
-        except Exception as e:
-            print(f"Emergency protocol dialog error: {e}")
-            return messagebox.askyesno("Emergency", "Activate emergency protocol?")
+        """Show simplified emergency protocol dialog"""
+        return messagebox.askyesno(
+            "🚨 EMERGENCY PROTOCOL", 
+            "Activate full emergency protocol?\n\n• Contact emergency services\n• Alert all contacts\n• Start recording evidence\n• Share location"
+        )
             
     def show_futuristic_call_dialog(self, name, number, location_text):
-        """Show futuristic emergency call dialog"""
-        try:
-            dialog = FuturisticCallDialog(self.root, name, number, location_text)
-            return dialog.result
-        except Exception as e:
-            print(f"Call dialog error: {e}")
-            return messagebox.askyesno("Emergency Call", f"Call {name}?")
+        """Show simplified emergency call dialog"""
+        return messagebox.askyesno(
+            "📞 EMERGENCY CALL", 
+            f"Contact: {name}\nNumber: {number}\n\nLocation: {location_text}\n\nProceed with emergency call?"
+        )
 
     def animate_pulse(self):
         """Create pulsing animation effect"""

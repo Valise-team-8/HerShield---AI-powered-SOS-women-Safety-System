@@ -1,0 +1,22 @@
+# Mobile App Requirements (Android)
+
+# Core framework
+kivy==2.2.1
+kivymd==1.1.1
+
+# Android support
+pyjnius==1.5.0
+plyer==2.1.0
+android==1.0
+
+# Build tools
+buildozer==1.5.0
+cython==3.0.5
+
+# Core dependencies (lightweight for mobile)
+# Note: Some features may need to be simplified for mobile
+
+# Optional: If you want full features on mobile
+# speechrecognition>=3.10.0
+# opencv-python>=4.8.0
+# numpy>=1.24.0

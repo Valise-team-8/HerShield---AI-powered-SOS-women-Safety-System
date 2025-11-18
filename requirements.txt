@@ -26,8 +26,8 @@ pillow>=10.0.0
 
 # Notifications & Alerts
 plyer>=2.1.0
-smtplib
 email-validator>=2.0.0
+twilio>=8.10.0  # For SMS alerts in offline mode
 
 # Utilities
 python-dotenv>=1.0.0
